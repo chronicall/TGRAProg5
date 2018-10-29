@@ -3,17 +3,14 @@ package tgra.prog5.game;
 public class Character {
 	public ModelMatrix origin;
 	public Shader3D shader;
-	public int width, height;
 	
 	private Vector3D materialAmbient;
 	private Vector3D materialDiffuse;
 	private Vector3D materialSpecular;
 	private float materialShine;
 	
-	public Character(Shader3D shader, int width, int height, Point3D position, Vector3D matAmbient, Vector3D matDiffuse, Vector3D matSpecular, float shine) {
+	public Character(Shader3D shader, Point3D position, Vector3D matAmbient, Vector3D matDiffuse, Vector3D matSpecular, float shine) {
 		this.shader = shader;
-		this.width = width;
-		this.height = height;
 		this.materialAmbient = matAmbient;
 		this.materialDiffuse = matDiffuse;
 		this.materialSpecular = matSpecular;

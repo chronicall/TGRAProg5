@@ -54,8 +54,16 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 	}
 	
 	private void setup() {
+		Point3D playerPos = new Point3D(2.0f, 1.5f, 3.0f);
+		Vector3D playerAmbient = new Vector3D();
+		Vector3D playerDiffuse = new Vector3D();
+		Vector3D playerSpecular = new Vector3D();
+		float playerShine = 10.0f;
+		this.player = new Player(this.shader, playerPos, playerAmbient, playerDiffuse, playerSpecular, playerShine);
+		
+		
 		this.camera = new Camera();
-		this.eye = new Point3D(0, 1.0f, 0);
+		this.eye = new Point3D(0, 1, 0);
 		this.center = new Point3D(2.0f, 1.0f, 5.0f);
 		this.up = new Vector3D(0.0f, 1.0f, 0.0f);
 		this.camera.look(this.eye, this.center, this.up);
@@ -67,7 +75,6 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		this.shader.setLightPosition(10, 15, 10, 1);
 		this.shader.setLightColour(1, 1, 1, 1);
 		this.shader.setGlobalAmbient(0, 0, 0, 1);
-		
 	}
 
 	private void input() {
@@ -95,18 +102,6 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 			this.camera.pitch(-90.0f * deltaTime);
 		}
 		
-		if(Gdx.input.isKeyPressed(Input.Keys.A)) {
-			this.camera.slide(-3.0f * deltaTime, 0.0f, 0.0f);
-		}
-		if(Gdx.input.isKeyPressed(Input.Keys.D)) {
-			this.camera.slide(3.0f * deltaTime, 0.0f, 0.0f);
-		}
-		if(Gdx.input.isKeyPressed(Input.Keys.W)) {
-			this.camera.slide(0.0f, 0.0f, -3.0f * deltaTime);
-		}
-		if(Gdx.input.isKeyPressed(Input.Keys.S)) {
-			this.camera.slide(0.0f, 0.0f, 3.0f * deltaTime);
-		}
 		if(Gdx.input.isKeyPressed(Input.Keys.R)) {
 			this.camera.slide(0.0f, 3.0f * deltaTime, 0.0f);
 		}
@@ -136,6 +131,11 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		if (Gdx.input.isKeyJustPressed(Input.Keys.V)) {
 			this.firstPersonView = !this.firstPersonView;
 		}
+		
+		this.player.update(deltaTime);
+		Point3D playerOrigin = this.player.origin.getOrigin();
+		
+		this.camera.setEye(playerOrigin.x - 1, playerOrigin.y + 1.5f, playerOrigin.z - 2f);
 	}
 	
 	private void display() {
@@ -239,7 +239,9 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 			BoxGraphic.drawSolidCube();
 			ModelMatrix.main.popMatrix();
 			
-			if (viewNum == 1) {
+			this.player.display();
+			
+			/*if (viewNum == 1) {
 				this.shader.setMaterialAmbient(0.0f, 0.0f, 0.0f, 1.0f);
 				this.shader.setMaterialDiffuse(0.5f, 0.0f, 0.0f, 1.0f);
 				this.shader.setMaterialSpecular(0.7f, 0.6f, 0.6f, 1.0f);
@@ -250,7 +252,7 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 				this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
 				BoxGraphic.drawSolidCube();
 				ModelMatrix.main.popMatrix();
-			}
+			}*/
 		}
 		
 	}
