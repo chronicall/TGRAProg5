@@ -53,6 +53,10 @@ public class Camera {
 		this.eye.set(x, y, z);
 	}
 	
+	public void setEye(Point3D position) {
+		this.eye.set(position.x, position.y, position.z);
+	}
+	
 	public void slide(float delU, float delV, float delN) {
 		this.eye.x += delU * this.u.x + delV * this.v.x + delN * this.n.x;
 		this.eye.y += delU * this.u.y + delV * this.v.y + delN * this.n.y;
