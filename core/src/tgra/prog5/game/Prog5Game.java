@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 
+
 public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 	private Shader3D shader;
 	
@@ -39,8 +40,9 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		Pyramid.create(shader);
 		this.height = 50;
 		this.width = 50;
-
-		Gdx.gl.glClearColor(0, 0, 0, 1.0f);
+		Board.create(shader, this.width, this.height);
+		
+		Gdx.gl.glClearColor(0.3f, 0.7f, 1.0f, 1.0f);
 
 		ModelMatrix.main = new ModelMatrix();
 		ModelMatrix.main.loadIdentityMatrix();
@@ -199,6 +201,8 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 			BoxGraphic.drawSolidCube();
 			ModelMatrix.main.popMatrix();
 			// END REMOVE BEFORE HANDIN
+			
+			Board.drawBoard(this.angle);
 			
 			this.shader.setMaterialAmbient(0.0f, 0.0f, 0.0f, 1.0f);
 			this.shader.setMaterialDiffuse(0.5f, 0.5f, 0.5f, 1.0f);
