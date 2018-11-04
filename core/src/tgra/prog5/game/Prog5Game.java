@@ -25,7 +25,8 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 	//private float timer;
 	
 	private Player player;
-	private Enemy enemy;
+	private Goomba goomba1, goomba2;
+	private ChainChomp chainChomp;
 
 	@Override
 	public void create () {
@@ -56,12 +57,30 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 	}
 	
 	private void setup() {
-		Point3D playerPos = new Point3D(2.0f, 1.5f, 3.0f);
+		Point3D playerPos = new Point3D(2.0f, 3.5f, 3.0f);
 		Vector3D playerAmbient = new Vector3D();
 		Vector3D playerDiffuse = new Vector3D();
 		Vector3D playerSpecular = new Vector3D();
 		float playerShine = 10.0f;
 		this.player = new Player(this.shader, playerPos, playerAmbient, playerDiffuse, playerSpecular, playerShine);
+		
+		//enemies
+		Point3D goomba1Pos = new Point3D(15.0f, 3.5f, 20.0f);
+		Vector3D goombaAmbient = new Vector3D();
+		Vector3D goombaDiffuse = new Vector3D();
+		Vector3D goombaSpecular = new Vector3D();
+		float goombaShine = 10.0f;
+		this.goomba1 = new Goomba(this.shader, goomba1Pos, goombaAmbient, goombaDiffuse, goombaSpecular, goombaShine, false, this.height);
+		
+		Point3D goomba2Pos = new Point3D(20.0f, 3.5f, 10.0f);
+		this.goomba2 = new Goomba(this.shader, goomba2Pos, goombaAmbient, goombaDiffuse, goombaSpecular, goombaShine, true, this.height);
+		
+		Point3D chainChompPos = new Point3D(10.0f, 3.5f, 10.0f);
+		Vector3D chainChompAmbient = new Vector3D();
+		Vector3D chainChompDiffuse = new Vector3D();
+		Vector3D chainChompSpecular = new Vector3D();
+		float chainChompShine = 10.0f;
+		this.chainChomp = new ChainChomp(this.shader, chainChompPos, chainChompAmbient, chainChompDiffuse, chainChompSpecular, chainChompShine, this.height, this.width);
 		
 		
 		this.camera = new Camera();
@@ -137,6 +156,11 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		this.player.update(deltaTime);
 		Point3D playerOrigin = this.player.origin.getOrigin();
 		
+		//enemies
+		this.goomba1.update(deltaTime);
+		this.goomba2.update(deltaTime);
+		this.chainChomp.update(deltaTime);
+		
 		this.camera.setEye(playerOrigin.x - 1, playerOrigin.y + 1.5f, playerOrigin.z - 2f);
 	}
 	
@@ -162,7 +186,7 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 			
 			ModelMatrix.main.loadIdentityMatrix();
 			
-			ModelMatrix.main.pushMatrix();
+			/*ModelMatrix.main.pushMatrix();
 			this.shader.setMaterialAmbient(0, 0, 0, 1);
 			this.shader.setMaterialDiffuse(0, 0, 0, 1);
 			this.shader.setMaterialSpecular(0, 0, 0, 1);
@@ -171,13 +195,13 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 			ModelMatrix.main.addScale(0.5f, 0.5f, 0.5f);
 			this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
 			SphereGraphic.drawSolidSphere();
-			ModelMatrix.main.popMatrix();
+			ModelMatrix.main.popMatrix();*/
 			
 			this.shader.setMaterialEmission(0, 0, 0, 1);
 			
 			// Temporary coordinate frame. Red is X, green is Y, blue is Z
 			// REMOVE BEFORE HANDIN
-			ModelMatrix.main.pushMatrix();
+			/*ModelMatrix.main.pushMatrix();
 			this.shader.setMaterialDiffuse(1, 0, 0, 1.0f);
 			ModelMatrix.main.addTranslation(5, 0, 0);
 			ModelMatrix.main.addScale(10.0f, 0.2f, 0.2f);
@@ -199,12 +223,12 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 			ModelMatrix.main.addScale(0.2f, 0.2f, 10.0f);
 			this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
 			BoxGraphic.drawSolidCube();
-			ModelMatrix.main.popMatrix();
+			ModelMatrix.main.popMatrix();*/
 			// END REMOVE BEFORE HANDIN
 			
 			Board.drawBoard(this.angle);
 			
-			this.shader.setMaterialAmbient(0.0f, 0.0f, 0.0f, 1.0f);
+			/*this.shader.setMaterialAmbient(0.0f, 0.0f, 0.0f, 1.0f);
 			this.shader.setMaterialDiffuse(0.5f, 0.5f, 0.5f, 1.0f);
 			this.shader.setMaterialSpecular(0.1f, 0.1f, 0.1f, 1.0f);
 			
@@ -241,9 +265,14 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 			ModelMatrix.main.addScale(5f, 0.2f, 15);
 			this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
 			BoxGraphic.drawSolidCube();
-			ModelMatrix.main.popMatrix();
+			ModelMatrix.main.popMatrix();*/
 			
 			this.player.display();
+			
+			//enemiesz
+			this.goomba1.display();
+			this.goomba2.display();
+			this.chainChomp.display();
 			
 			/*if (viewNum == 1) {
 				this.shader.setMaterialAmbient(0.0f, 0.0f, 0.0f, 1.0f);
