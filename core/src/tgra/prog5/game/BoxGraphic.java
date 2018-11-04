@@ -88,6 +88,19 @@ public class BoxGraphic {
 		Gdx.gl.glDrawArrays(GL20.GL_TRIANGLE_FAN, 20, 4);
 
 	}
+	
+	public static void drawBaseWall() {
+		Gdx.gl.glVertexAttribPointer(vertexPointer, 3, GL20.GL_FLOAT, false, 0, vertexBuffer);
+		Gdx.gl.glVertexAttribPointer(normalPointer, 3, GL20.GL_FLOAT, false, 0, normalBuffer);
+
+		Gdx.gl.glDrawArrays(GL20.GL_TRIANGLE_FAN, 0, 4);
+		Gdx.gl.glDrawArrays(GL20.GL_TRIANGLE_FAN, 4, 4);
+		Gdx.gl.glDrawArrays(GL20.GL_TRIANGLE_FAN, 8, 4);
+		Gdx.gl.glDrawArrays(GL20.GL_TRIANGLE_FAN, 12, 4);
+		Gdx.gl.glDrawArrays(GL20.GL_TRIANGLE_FAN, 16, 4);
+		Gdx.gl.glDrawArrays(GL20.GL_TRIANGLE_FAN, 20, 4);
+
+	}
 
 	public static void drawOutlineCube() {
 		Gdx.gl.glVertexAttribPointer(vertexPointer, 3, GL20.GL_FLOAT, false, 0, vertexBuffer);
