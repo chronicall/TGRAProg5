@@ -18,7 +18,7 @@ Controls go here.
   - [ ] Platforms
 - [ ] Floor
   - [ ] Some random shape/s
-  - [ ] Static board
+  - [x] Static board
   - [ ] Randomly generated board
   - [ ] Board generator/collector (Optional)
     - [ ] Store a few pre-generated boards
@@ -30,8 +30,8 @@ Controls go here.
   - [ ] Enemy that is tied to one spot (chain chomps)
   - [ ] Moving enemies (goombas)
 - [ ] Super Sario (character)
-  - [ ] Movement
-  - [ ] Jumping
+  - [x] Movement
+  - [x] Jumping
   - [ ] Design/look, shapes/texture/etc.
 - [ ] Textures
   - [ ] Player

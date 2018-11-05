@@ -6,15 +6,19 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.utils.BufferUtils;
 
+import entities.Player;
 import utils.Point3D;
 import utils.Vector3D;
 
 public class Camera {
+	// Eye position
 	public Point3D eye;
+	// Camera specific vectors. TODO: descriptive names
 	private Vector3D u;
 	private Vector3D v;
 	private Vector3D n;
 	
+	// Perspective projection variables
 	private float left;
 	private float right;
 	private float top;
@@ -22,10 +26,15 @@ public class Camera {
 	private float near;
 	private float far;
 	
-	float pitch;
-	float yaw;
+	// The pitch of the camera
+	private float pitch;
+	private float distanceToPlayer;
 	
-	public Camera() {
+	// Player instance to get access to the position
+	private Player player;
+	
+	public Camera(Player player) {
+		this.player = player;
 		this.eye = new Point3D();
 		this.u = new Vector3D(1.0f, 0.0f, 0.0f);
 		this.v = new Vector3D(0.0f, 1.0f, 0.0f);
@@ -39,28 +48,66 @@ public class Camera {
 		this.top = 1;
 		this.near = -1;
 		this.far = 1;
+		
+		// Square root, not ideal, I know.. but only doing this once when the game starts, so..
+		// I think we can get away with that!
+		this.distanceToPlayer = (float) Math.sqrt(
+			Math.pow(this.eye.x - this.player.position.x, 2) +
+			Math.pow(this.eye.y - this.player.position.y, 2) +
+			Math.pow(this.eye.z - this.player.position.z, 2)
+		);
 	}
 	
 	public void update(float deltaTime) {
 		float angle = 90.0f * deltaTime;
 		
-		if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-			this.yaw += angle;
-		}
-		if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-			this.yaw -= angle;
-		}
 		if (Gdx.input.isKeyPressed(Keys.UP)) {
-			this.pitch += angle;
+			if (this.pitch < 80) {
+				this.pitch += angle;
+			} else {
+				this.pitch = 80;
+			}
 		}
 		if (Gdx.input.isKeyPressed(Keys.DOWN)) {
-			this.pitch -= angle;
+			if (this.pitch > 0) {
+				this.pitch -= angle;
+			} else {
+				this.pitch = 0;
+			}
+		}
+		if (Gdx.input.isKeyPressed(Keys.Q)) {
+			if (this.distanceToPlayer < 7) {
+				this.distanceToPlayer += 3.0f * deltaTime;
+			} else {
+				this.distanceToPlayer = 7;
+			}
+		}
+		if (Gdx.input.isKeyPressed(Keys.E)) {
+			if (this.distanceToPlayer > 1) {
+				this.distanceToPlayer -= 3.0f * deltaTime;
+			} else {
+				this.distanceToPlayer = 1;
+			}
 		}
 	}
 
 	public void look(Point3D eye, Point3D center, Vector3D up) {
-		this.eye.set(eye.x, eye.y, eye.z);
+		// Find the horizontal and vertical distance between the camera and the player
+		float horizontalDistance = (float) (this.distanceToPlayer * Math.cos(Math.toRadians(this.pitch)));
+		float verticalDistance = (float) (this.distanceToPlayer * Math.sin(Math.toRadians(this.pitch)));
 		
+		// The offset of the camera from the player.
+		// The X and Z values are determined by the horizontal distance.
+		// The Y value is simply the vertical distance.
+		float offsetX = (float) (horizontalDistance * Math.sin(Math.toRadians(this.player.getYRotation())));
+		float offsetZ = (float) (horizontalDistance * Math.cos(Math.toRadians(this.player.getYRotation())));
+		this.eye.set(
+				this.player.position.x - offsetX,
+				this.player.position.y + verticalDistance,
+				this.player.position.z - offsetZ
+		);
+		
+		// Update the camera vectors
 		this.n = Vector3D.difference(eye, center);
 		this.u = up.cross(this.n);
 		this.n = this.n.normalize();
@@ -71,17 +118,15 @@ public class Camera {
 	public void setEye(float x, float y, float z) {
 		this.eye.set(x, y, z);
 	}
-	
 	public void setEye(Point3D position) {
 		this.eye.set(position.x, position.y, position.z);
 	}
 	
-	public void slide(float delU, float delV, float delN) {
-		this.eye.x += delU * this.u.x + delV * this.v.x + delN * this.n.x;
-		this.eye.y += delU * this.u.y + delV * this.v.y + delN * this.n.y;
-		this.eye.z += delU * this.u.z + delV * this.v.z + delN * this.n.z;
+	public float getPitch() {
+		return this.pitch;
 	}
 	
+	// Set the variables for a perspective projection
 	public void perspectiveProjection(float fov, float ratio, float near, float far) {
 		this.top = near * (float)Math.tan(((double)fov / 2.0) * Math.PI / 180.0);
 		this.bottom = -this.top;
@@ -91,6 +136,7 @@ public class Camera {
 		this.far = far;
 	}
 	
+	// Construct and return the view matrix
 	public FloatBuffer getViewMatrix() {
 		FloatBuffer matrixBuffer = BufferUtils.newFloatBuffer(16);
 		float[] pm = new float[16];
@@ -108,6 +154,7 @@ public class Camera {
 		return matrixBuffer;
 	}
 	
+	// Construct and return the projection matrix
 	public FloatBuffer getProjectionMatrix() {
 		FloatBuffer matrixBuffer = BufferUtils.newFloatBuffer(16);
 		float[] pm = new float[16];

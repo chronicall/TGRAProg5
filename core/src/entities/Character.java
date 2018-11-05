@@ -1,7 +1,6 @@
 package entities;
 
 import shaders.Shader3D;
-import shapes.BoxGraphic;
 import utils.ModelMatrix;
 import utils.Point3D;
 import utils.Vector3D;
@@ -40,21 +39,17 @@ public class Character {
 	}
 	
 	public void display() {
-		// Player setup
+		// Character wide display setup
+		// Material colours and shine values
 		this.shader.setMaterialAmbient(this.materialAmbient.x, this.materialAmbient.y, this.materialAmbient.z, 1.0f);
 		this.shader.setMaterialDiffuse(this.materialDiffuse.x, this.materialDiffuse.y, this.materialDiffuse.z, 1.0f);
 		this.shader.setMaterialSpecular(this.materialSpecular.x, this.materialSpecular.y, this.materialSpecular.z, 1.0f);
 		this.shader.setMaterialShiniess(this.materialShine);
 		this.shader.setMaterialEmission(0.2f, 0.2f, 0.2f, 0.2f);
-		ModelMatrix.main.pushMatrix();
-		ModelMatrix.main.addTransformation(this.origin.matrix);
-		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
-//		SphereGraphic.drawSolidSphere();
-		ModelMatrix.main.popMatrix();
 	}
 	
 	public void update(float deltaTime) {
+		// Character wide updates
 	}
 	
 	public float getXRotation() {

@@ -3,6 +3,8 @@ package entities;
 import java.util.concurrent.ThreadLocalRandom;
 
 import shaders.Shader3D;
+import shapes.SphereGraphic;
+import utils.ModelMatrix;
 import utils.Point3D;
 import utils.Vector3D;
 
@@ -26,6 +28,12 @@ public class ChainChomp extends Enemy{
 
 	public void display() {
 		super.display();
+		ModelMatrix.main.pushMatrix();
+		ModelMatrix.main.addTransformation(this.origin.matrix);
+		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		//BoxGraphic.drawSolidCube();
+		SphereGraphic.drawSolidSphere();
+		ModelMatrix.main.popMatrix();
 	}
 	
 	public void update(float deltaTime) {
