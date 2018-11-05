@@ -1,4 +1,4 @@
-package tgra.prog5.game;
+package utils;
 
 public class ModelMatrix extends Matrix {
 

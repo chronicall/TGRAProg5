@@ -1,6 +1,10 @@
-package tgra.prog5.game;
+package entities;
 
-public class Goomba extends Enemy{
+import shaders.Shader3D;
+import utils.Point3D;
+import utils.Vector3D;
+
+public class Goomba extends Enemy {
 	private boolean yMotion;
 	private boolean up;
 	private Point3D originalPosition;

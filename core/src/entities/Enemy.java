@@ -1,4 +1,8 @@
-package tgra.prog5.game;
+package entities;
+
+import shaders.Shader3D;
+import utils.Point3D;
+import utils.Vector3D;
 
 public class Enemy extends Character {
 	

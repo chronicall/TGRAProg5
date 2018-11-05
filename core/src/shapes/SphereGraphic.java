@@ -1,4 +1,4 @@
-package tgra.prog5.game;
+package shapes;
 
 import java.nio.FloatBuffer;
 

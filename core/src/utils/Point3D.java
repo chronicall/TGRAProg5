@@ -1,4 +1,4 @@
-package tgra.prog5.game;
+package utils;
 
 public class Point3D {
 	public float x;
@@ -25,6 +25,12 @@ public class Point3D {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+	}
+	
+	public void set(Point3D eye) {
+		this.x = eye.x;
+		this.y = eye.y;
+		this.z = eye.z;
 	}
 	
 	public Vector3D different(Point3D p1) {

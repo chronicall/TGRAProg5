@@ -1,4 +1,8 @@
-package tgra.prog5.game;
+package environment;
+
+import shaders.Shader3D;
+import shapes.BoxGraphic;
+import utils.ModelMatrix;
 
 public class Pyramid {
 	private static Shader3D shader;

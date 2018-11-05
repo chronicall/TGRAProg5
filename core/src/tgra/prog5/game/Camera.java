@@ -2,34 +2,36 @@ package tgra.prog5.game;
 
 import java.nio.FloatBuffer;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.utils.BufferUtils;
 
+import utils.Point3D;
+import utils.Vector3D;
+
 public class Camera {
-	Point3D eye;
-	Vector3D u;
-	Vector3D v;
-	Vector3D n;
+	public Point3D eye;
+	private Vector3D u;
+	private Vector3D v;
+	private Vector3D n;
 	
-	boolean orthographic;
+	private float left;
+	private float right;
+	private float top;
+	private float bottom;
+	private float near;
+	private float far;
 	
-	float left;
-	float right;
-	float top;
-	float bottom;
-	float near;
-	float far;
-	
-	private FloatBuffer matrixBuffer;
+	float pitch;
+	float yaw;
 	
 	public Camera() {
-		this.matrixBuffer = BufferUtils.newFloatBuffer(16);
-		
-		this.orthographic = true;
-		
 		this.eye = new Point3D();
 		this.u = new Vector3D(1.0f, 0.0f, 0.0f);
 		this.v = new Vector3D(0.0f, 1.0f, 0.0f);
 		this.n = new Vector3D(0.0f, 0.0f, 1.0f);
+		
+		this.pitch = 30.0f;
 		
 		this.left = -1;
 		this.right = 1;
@@ -37,6 +39,23 @@ public class Camera {
 		this.top = 1;
 		this.near = -1;
 		this.far = 1;
+	}
+	
+	public void update(float deltaTime) {
+		float angle = 90.0f * deltaTime;
+		
+		if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+			this.yaw += angle;
+		}
+		if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+			this.yaw -= angle;
+		}
+		if (Gdx.input.isKeyPressed(Keys.UP)) {
+			this.pitch += angle;
+		}
+		if (Gdx.input.isKeyPressed(Keys.DOWN)) {
+			this.pitch -= angle;
+		}
 	}
 
 	public void look(Point3D eye, Point3D center, Vector3D up) {
@@ -63,49 +82,6 @@ public class Camera {
 		this.eye.z += delU * this.u.z + delV * this.v.z + delN * this.n.z;
 	}
 	
-	public void roll(float angle) {
-		float radians = angle * (float)Math.PI / 180.0f;
-		float c = (float)Math.cos(radians);
-		float s = (float)Math.sin(radians);
-		
-		Vector3D t = new Vector3D(this.u.x, this.u.y, this.u.z);
-		
-		this.u.set(t.x * c - this.v.x * s, t.y * c - this.v.y * s, t.z * c - this.v.z * s);
-		this.v.set(t.x * s + this.v.x * c, t.y * s + this.v.y * c, t.z * s + this.v.z * c);
-	}
-
-	public void yaw(float angle) {
-		float radians = angle * (float)Math.PI / 180.0f;
-		float c = (float)Math.cos(radians);
-		float s = (float)Math.sin(radians);
-		
-		Vector3D t = new Vector3D(this.u.x, this.u.y, this.u.z);
-		
-		this.u.set(t.x * c - this.n.x * s, t.y * c - this.n.y * s, t.z * c - this.n.z * s);
-		this.n.set(t.x * s + this.n.x * c, t.y * s + this.n.y * c, t.z * s + this.n.z * c);
-	}
-
-	public void pitch(float angle) {
-		float radians = angle * (float)Math.PI / 180.0f;
-		float c = (float)Math.cos(radians);
-		float s = (float)Math.sin(radians);
-		
-		Vector3D t = new Vector3D(this.n.x, this.n.y, this.n.z);
-		
-		this.n.set(t.x * c - this.v.x * s, t.y * c - this.v.y * s, t.z * c - this.v.z * s);
-		this.v.set(t.x * s + this.v.x * c, t.y * s + this.v.y * c, t.z * s + this.v.z * c);
-	}
-	
-	public void orthographicProjection(float left, float right, float bottom, float top, float near, float far) {
-		this.left = left;
-		this.right = right;
-		this.bottom = bottom;
-		this.top = top;
-		this.near = near;
-		this.far = far;
-		this.orthographic = true;
-	}
-	
 	public void perspectiveProjection(float fov, float ratio, float near, float far) {
 		this.top = near * (float)Math.tan(((double)fov / 2.0) * Math.PI / 180.0);
 		this.bottom = -this.top;
@@ -113,10 +89,10 @@ public class Camera {
 		this.left = -this.right;
 		this.near = near;
 		this.far = far;
-		this.orthographic = false;
 	}
 	
 	public FloatBuffer getViewMatrix() {
+		FloatBuffer matrixBuffer = BufferUtils.newFloatBuffer(16);
 		float[] pm = new float[16];
 		
 		Vector3D minusEye = new Vector3D(-this.eye.x, -this.eye.y, -this.eye.z);
@@ -133,20 +109,13 @@ public class Camera {
 	}
 	
 	public FloatBuffer getProjectionMatrix() {
+		FloatBuffer matrixBuffer = BufferUtils.newFloatBuffer(16);
 		float[] pm = new float[16];
 		
-		if (this.orthographic) {
-			pm[0] = 2.0f / (right - left); 			pm[4] = 0.0f;  				  			pm[8] = 0.0f; 							 pm[12] = -(right + left) / (right - left);
-			pm[1] = 0.0f; 				   			pm[5] = 2.0f / (top - bottom); 			pm[9] = 0.0f; 							 pm[13] = -(top + bottom) / (top - bottom);
-			pm[2] = 0.0f; 				   			pm[6] = 0.0f; 				  			pm[10] = 2.0f / (near - far); 			 pm[14] = (near + far) / (near - far);
-			pm[3] = 0.0f; 				   			pm[7] = 0.0f; 				  			pm[11] = 0.0f; 							 pm[15] = 1.0f;
-		}
-		else {
-			pm[0] = (2.0f * near) / (right - left); pm[4] = 0.0f; 							pm[8] = (right + left) / (right - left); pm[12] = 0.0f;
-			pm[1] = 0.0f; 							pm[5] = (2.0f * near) / (top - bottom); pm[9] = (top + bottom) / (top - bottom); pm[13] = 0.0f;
-			pm[2] = 0.0f;							pm[6] = 0.0f; 							pm[10] = -(far + near) / (far - near);   pm[14] = -(2.0f * far * near) / (far - near);
-			pm[3] = 0.0f; 							pm[7] = 0.0f; 							pm[11] = -1.0f; 					  	 pm[15] = 0.0f;
-		}
+		pm[0] = (2.0f * near) / (right - left); pm[4] = 0.0f; 							pm[8] = (right + left) / (right - left); pm[12] = 0.0f;
+		pm[1] = 0.0f; 							pm[5] = (2.0f * near) / (top - bottom); pm[9] = (top + bottom) / (top - bottom); pm[13] = 0.0f;
+		pm[2] = 0.0f;							pm[6] = 0.0f; 							pm[10] = -(far + near) / (far - near);   pm[14] = -(2.0f * far * near) / (far - near);
+		pm[3] = 0.0f; 							pm[7] = 0.0f; 							pm[11] = -1.0f; 					  	 pm[15] = 0.0f;
 		
 		matrixBuffer.put(pm);
 		matrixBuffer.rewind();

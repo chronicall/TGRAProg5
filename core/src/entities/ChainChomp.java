@@ -1,6 +1,10 @@
-package tgra.prog5.game;
+package entities;
 
 import java.util.concurrent.ThreadLocalRandom;
+
+import shaders.Shader3D;
+import utils.Point3D;
+import utils.Vector3D;
 
 public class ChainChomp extends Enemy{
 	private Point3D chainPosition;

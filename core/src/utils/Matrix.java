@@ -1,4 +1,4 @@
-package tgra.prog5.game;
+package utils;
 
 import java.nio.FloatBuffer;
 import java.util.Stack;

@@ -1,4 +1,4 @@
-package tgra.prog5.game;
+package shaders;
 
 import java.nio.FloatBuffer;
 
@@ -31,20 +31,10 @@ public class Shader3D {
 	private int lightColourLoc;
 	private int lightPositionLoc;
 	
-	private int treasureLightPositionLoc;
-	private int treasureLightAmbientLoc;
-	private int treasureLightDiffuseLoc;
-	private int treasureLightSpecularLoc;
-	
 	private int sun1DirectionLoc;
 	private int sun1AmbientLoc;
 	private int sun1DiffuseLoc;
 	private int sun1SpecularLoc;
-	
-	private int sun2DirectionLoc;
-	private int sun2AmbientLoc;
-	private int sun2DiffuseLoc;
-	private int sun2SpecularLoc;
 	
 	public Shader3D() {
 		String vertexShaderString;
@@ -52,6 +42,9 @@ public class Shader3D {
 
 		vertexShaderString = Gdx.files.internal("shaders/mazeFragmentLighting3D.vert").readString();
 		fragmentShaderString =  Gdx.files.internal("shaders/mazeFragmentLighting3D.frag").readString();
+		
+//		vertexShaderString = Gdx.files.internal("shaders/vertext3D.vert").readString();
+//		fragmentShaderString =  Gdx.files.internal("shaders/fragment3D.frag").readString();
 
 		this.vertexShaderID = Gdx.gl.glCreateShader(GL20.GL_VERTEX_SHADER);
 		this.fragmentShaderID = Gdx.gl.glCreateShader(GL20.GL_FRAGMENT_SHADER);
@@ -94,21 +87,11 @@ public class Shader3D {
 		this.lightColourLoc				= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_lightColour");
 		this.lightPositionLoc			= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_lightPosition");
 		
-		this.treasureLightPositionLoc	= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_treasureLight.position");
-		this.treasureLightAmbientLoc	= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_treasureLight.ambient");
-		this.treasureLightDiffuseLoc	= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_treasureLight.diffuse");
-		this.treasureLightSpecularLoc	= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_treasureLight.specular");
-		
 		this.sun1DirectionLoc			= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_sun1.direction");
 		this.sun1AmbientLoc				= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_sun1.ambient");
 		this.sun1DiffuseLoc				= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_sun1.diffuse");
 		this.sun1SpecularLoc			= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_sun1.specular");
 		
-		this.sun2DirectionLoc			= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_sun2.direction");
-		this.sun2AmbientLoc				= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_sun2.ambient");
-		this.sun2DiffuseLoc				= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_sun2.diffuse");
-		this.sun2SpecularLoc			= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_sun2.specular");
-
 		Gdx.gl.glUseProgram(this.renderingProgramID);
 	}
 
@@ -161,19 +144,6 @@ public class Shader3D {
 		Gdx.gl.glUniform4f(this.lightPositionLoc, x, y, z, w);
 	}
 	
-	public void setTreasureLightPosition(float x, float y, float z, float w) {
-		Gdx.gl.glUniform4f(this.treasureLightPositionLoc, x, y, z, w);
-	}
-	public void setTreasureLightAmbient(float r, float g, float b, float a) {
-		Gdx.gl.glUniform4f(this.treasureLightAmbientLoc, r, g, b, a);
-	}
-	public void setTreasureLightDiffuse(float r, float g, float b, float a) {
-		Gdx.gl.glUniform4f(this.treasureLightDiffuseLoc, r, g, b, a);
-	}
-	public void setTreasureLightSpecular(float r, float g, float b, float a) {
-		Gdx.gl.glUniform4f(this.treasureLightSpecularLoc, r, g, b, a);
-	}
-	
 	public void setSun1Direction(float x, float y, float z, float w) {
 		Gdx.gl.glUniform4f(this.sun1DirectionLoc, x, y, z, w);
 	}
@@ -185,18 +155,5 @@ public class Shader3D {
 	}
 	public void setSun1Specular(float r, float g, float b, float a) {
 		Gdx.gl.glUniform4f(this.sun1SpecularLoc, r, g, b, a);
-	}
-	
-	public void setSun2Direction(float x, float y, float z, float w) {
-		Gdx.gl.glUniform4f(this.sun2DirectionLoc, x, y, z, w);
-	}
-	public void setSun2Ambient(float r, float g, float b, float a) {
-		Gdx.gl.glUniform4f(this.sun2AmbientLoc, r, g, b, a);
-	}
-	public void setSun2Diffuse(float r, float g, float b, float a) {
-		Gdx.gl.glUniform4f(this.sun2DiffuseLoc, r, g, b, a);
-	}
-	public void setSun2Specular(float r, float g, float b, float a) {
-		Gdx.gl.glUniform4f(this.sun2SpecularLoc, r, g, b, a);
 	}
 }
