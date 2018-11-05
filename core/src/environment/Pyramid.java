@@ -1,13 +1,13 @@
 package environment;
 
-import shaders.Shader3D;
-import shapes.BoxGraphic;
-import utils.ModelMatrix;
+import graphics.ModelMatrix;
+import graphics.shapes.BoxGraphic;
+import shaders.Shader;
 
 public class Pyramid {
-	private static Shader3D shader;
+	private static Shader shader;
 	
-	public static void create(Shader3D shader) {
+	public static void create(Shader shader) {
 		Pyramid.shader = shader;
 	}
 
@@ -37,7 +37,7 @@ public class Pyramid {
 						ModelMatrix.main.addScale(1.0f, 1.0f, 0.2f);
 					}
 					Pyramid.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-					BoxGraphic.drawSolidCube();
+					BoxGraphic.drawSolidCube(Pyramid.shader, null, null);
 					ModelMatrix.main.popMatrix();
 				}
 				

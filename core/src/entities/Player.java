@@ -2,13 +2,14 @@ package entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Texture;
 
-import shaders.Shader3D;
-import shapes.BoxGraphic;
-import shapes.SphereGraphic;
-import utils.ModelMatrix;
-import utils.Point3D;
-import utils.Vector3D;
+import graphics.ModelMatrix;
+import graphics.Point3D;
+import graphics.Vector3D;
+import graphics.shapes.BoxGraphic;
+import graphics.shapes.SphereGraphic;
+import shaders.Shader;
 
 public class Player extends Character {
 	private static final float RUN_SPEED = 10;
@@ -21,10 +22,13 @@ public class Player extends Character {
 	private float upVelocity;
 	private boolean isJumping;
 	
-	public Player(Shader3D shader, Point3D position, Vector3D matAmbient, Vector3D matDiffuse, Vector3D matSpecular, float shine) {
+	private Texture texture;
+	
+	public Player(Shader shader, Texture texture, Point3D position, Vector3D matAmbient, Vector3D matDiffuse, Vector3D matSpecular, float shine) {
 		super(shader, position, matAmbient, matDiffuse, matSpecular, shine);
 		this.upVelocity = 0.0f;
 		this.isJumping = false;
+		this.texture = texture;
 	}
 	
 	public void display() {
@@ -33,8 +37,8 @@ public class Player extends Character {
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.addTransformation(this.origin.matrix);
 		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
-		SphereGraphic.drawOutlineSphere();
+		BoxGraphic.drawSolidCube(this.shader, this.texture, null);
+		SphereGraphic.drawOutlineSphere(this.shader, this.texture, null);
 		ModelMatrix.main.popMatrix();
 	}
 	

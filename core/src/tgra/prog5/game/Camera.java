@@ -7,8 +7,8 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.utils.BufferUtils;
 
 import entities.Player;
-import utils.Point3D;
-import utils.Vector3D;
+import graphics.Point3D;
+import graphics.Vector3D;
 
 public class Camera {
 	// Eye position

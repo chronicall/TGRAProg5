@@ -1,4 +1,4 @@
-package utils;
+package graphics;
 
 public class Vector3D {
 	public float x;

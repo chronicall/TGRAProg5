@@ -56,12 +56,18 @@ struct SpotLight {
     vec4 specular;
 };
 
+uniform float u_usesDiffuseTexture;
+uniform sampler2D u_diffuseTexture;
+
+uniform float u_usesSpecularTexture;
+uniform sampler2D u_specularTexture;
+
 uniform vec4 u_lightColour;
 uniform Material u_material;
 
 uniform vec4 u_globalAmbient;
 
-//varying vec4 v_position;
+varying vec2 v_uv;
 varying vec4 v_normal;
 varying vec4 v_s;
 varying vec4 v_h;
@@ -75,26 +81,32 @@ vec4 spotLightValue(SpotLight light, vec4 normal, vec4 fragmentPosition, vec4 v)
 
 void main()
 {
-	float lambert = max(0.0, dot(v_normal, v_s) / (length(v_normal) * length(v_s)));
-	float phong = max(0.0, dot(v_normal, v_h) / (length(v_normal) * length(v_h)));
+	vec4 materialDiffuse;
+	if (u_usesDiffuseTexture == 1.0) {
+		materialDiffuse = texture2D(u_diffuseTexture, v_uv);
+	} else {
+		materialDiffuse = u_material.diffuse;
+	}
+	
+	vec4 materialSpecular;
+	if (u_usesSpecularTexture == 1.0) {
+		materialDiffuse = texture2D(u_specularTexture, v_uv);
+	} else {
+		materialSpecular = u_material.specular;
+	}
+	
+	float length_s = length(v_s);
+	float length_normal = length(v_normal);
+	float length_h = length(v_h);
+
+	float lambert = max(0.0, dot(v_normal, v_s) / (length_normal * length_s));
+	float phong = max(0.0, dot(v_normal, v_h) / (length_normal * length_h));
 	
 	vec4 ambient = u_globalAmbient * u_material.ambient;
 	vec4 diffuse = lambert * u_lightColour * u_material.diffuse;
-	vec4 specular = pow(phong, u_material.shininess) * u_lightColour * u_material.specular;
+	vec4 specular = pow(phong, u_material.shininess) * u_lightColour * materialSpecular;
 	
 	gl_FragColor = ambient + diffuse + specular + u_material.emission;
-
-	/*vec4 normal = normalize(v_normal);
-	vec4 v = normalize(u_eyePosition - v_position);
-	
-	// Treasure light
-	vec4 lightIntensity = posLightValue(u_treasureLight, normal, v_position, v);
-	
-	// Direction lights of the two suns
-	lightIntensity += dirLightValue(u_sun1, normal, v);
-	lightIntensity += dirLightValue(u_sun2, normal, v);
-	
-	gl_FragColor = u_globalAmbient * u_material.ambient + u_material.emission + lightIntensity;*/
 }
 
 /*

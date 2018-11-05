@@ -1,4 +1,4 @@
-package utils;
+package graphics;
 
 public class Point3D {
 	public float x;

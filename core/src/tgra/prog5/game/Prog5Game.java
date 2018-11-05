@@ -5,32 +5,44 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 
 import entities.ChainChomp;
 import entities.Goomba;
 import entities.Player;
 import environment.Board;
-import shaders.Shader3D;
-import shapes.BoxGraphic;
-import shapes.SphereGraphic;
-import utils.ModelMatrix;
-import utils.Point3D;
-import utils.Vector3D;
+import graphics.ModelMatrix;
+import graphics.Point3D;
+import graphics.Vector3D;
+import graphics.shapes.BoxGraphic;
+import graphics.shapes.SphereGraphic;
+import graphics.shapes.g3djmodel.G3DJModelLoader;
+import graphics.shapes.g3djmodel.MeshModel;
+import shaders.Shader;
 
 public class Prog5Game extends ApplicationAdapter implements InputProcessor {
-	private Shader3D shader;
+	private Shader shader;
 	
 	private Camera camera;
 	private float fov;
 	private Point3D eye;
 	private Vector3D up;
 	
+	private float angle;
+	
 	private int width;
 	private int height;
 	
+	MeshModel model;
+	
 	private Player player;
+	private Texture playerTexture;
+	
 	private Goomba goomba1, goomba2;
+	private Texture goombaTexture;
+	
 	private ChainChomp chainChomp;
+	private Texture chainChomTexture;
 
 	@Override
 	public void create () {
@@ -38,17 +50,22 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 		Gdx.input.setInputProcessor(this);
 		
-		this.shader = new Shader3D();
 		this.height = 50;
 		this.width = 50;
 		this.fov = 90.0f;
+		this.angle = 0.0f;
+		
+		this.shader = new Shader();
+		
+		this.playerTexture = new Texture(Gdx.files.internal("textures/dice.png"));
+		this.model = G3DJModelLoader.loadG3DJFromFile("chainChomp/chomp1.g3dj");
 		
 		ModelMatrix.main = new ModelMatrix();
 		ModelMatrix.main.loadIdentityMatrix();
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 
-		BoxGraphic.create(shader.getVertexPointer(), shader.getNormalPointer());
-		SphereGraphic.create(shader.getVertexPointer(), shader.getNormalPointer());
+		BoxGraphic.create();
+		SphereGraphic.create();
 		Board.create(shader, this.width, this.height);
 		this.setup();
 	}
@@ -61,7 +78,7 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		Vector3D playerSpecular = new Vector3D();
 		float playerShine = 10.0f;
 		this.player = new Player(
-				this.shader, playerPos,
+				this.shader, this.playerTexture, playerPos,
 				playerAmbient, playerDiffuse, playerSpecular, playerShine
 		);
 		
@@ -110,6 +127,8 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 
 	private void update() {
 		float deltaTime = Gdx.graphics.getDeltaTime();
+		
+		this.angle += 180.0f * deltaTime;
 
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
 			Gdx.app.exit();
@@ -144,7 +163,7 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		ModelMatrix.main.addTranslation(10, 15, 10);
 		ModelMatrix.main.addScale(0.5f, 0.5f, 0.5f);
 		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		SphereGraphic.drawSolidSphere();
+		SphereGraphic.drawSolidSphere(this.shader, null, null);
 		ModelMatrix.main.popMatrix();
 		
 		// Set material emission to 0, usually we don't want things glowing
@@ -158,7 +177,7 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		ModelMatrix.main.addTranslation(5, 0, 0);
 		ModelMatrix.main.addScale(10.0f, 0.2f, 0.2f);
 		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(this.shader, null, null);
 		ModelMatrix.main.popMatrix();
 		
 		ModelMatrix.main.pushMatrix();
@@ -166,7 +185,7 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		ModelMatrix.main.addTranslation(0, 5, 0);
 		ModelMatrix.main.addScale(0.2f, 10.0f, 0.2f);
 		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(this.shader, null, null);
 		ModelMatrix.main.popMatrix();
 		
 		ModelMatrix.main.pushMatrix();
@@ -174,11 +193,22 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		ModelMatrix.main.addTranslation(0, 0, 5);
 		ModelMatrix.main.addScale(0.2f, 0.2f, 10.0f);
 		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(this.shader, null, null);
 		ModelMatrix.main.popMatrix();
 		// END REMOVE BEFORE HANDIN
 		
 		Board.drawBoard();
+		
+//		ModelMatrix.main.pushMatrix();
+//		ModelMatrix.main.addTranslation(4.0f, 4.0f, 8.0f);
+//		ModelMatrix.main.addRotation(this.angle, new Vector3D(1,1,1));
+//		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+//
+//		//BoxGraphic.drawSolidCube(shader, this.playerTexture, null);
+//		model.draw(shader);
+
+//		ModelMatrix.main.popMatrix();
+
 		
 		// Draw all the entities
 		this.player.display();

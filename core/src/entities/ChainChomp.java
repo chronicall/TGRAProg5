@@ -2,11 +2,11 @@ package entities;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import shaders.Shader3D;
-import shapes.SphereGraphic;
-import utils.ModelMatrix;
-import utils.Point3D;
-import utils.Vector3D;
+import graphics.ModelMatrix;
+import graphics.Point3D;
+import graphics.Vector3D;
+import graphics.shapes.SphereGraphic;
+import shaders.Shader;
 
 public class ChainChomp extends Enemy{
 	private Point3D chainPosition;
@@ -15,7 +15,7 @@ public class ChainChomp extends Enemy{
 	private float width;
 	private int chainLength;
 
-	public ChainChomp(Shader3D shader, Point3D position, Vector3D matAmbient, Vector3D matDiffuse, Vector3D matSpecular,
+	public ChainChomp(Shader shader, Point3D position, Vector3D matAmbient, Vector3D matDiffuse, Vector3D matSpecular,
 			float shine, float height, float width) {
 		super(shader, position, matAmbient, matDiffuse, matSpecular, shine);
 		
@@ -32,7 +32,7 @@ public class ChainChomp extends Enemy{
 		ModelMatrix.main.addTransformation(this.origin.matrix);
 		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		//BoxGraphic.drawSolidCube();
-		SphereGraphic.drawSolidSphere();
+		SphereGraphic.drawSolidSphere(this.shader, null, null);
 		ModelMatrix.main.popMatrix();
 	}
 	

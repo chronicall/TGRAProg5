@@ -1,13 +1,15 @@
 package entities;
 
-import shaders.Shader3D;
-import utils.ModelMatrix;
-import utils.Point3D;
-import utils.Vector3D;
+import com.badlogic.gdx.graphics.Texture;
+
+import graphics.ModelMatrix;
+import graphics.Point3D;
+import graphics.Vector3D;
+import shaders.Shader;
 
 public class Character {
 	public ModelMatrix origin;
-	public Shader3D shader;
+	public Shader shader;
 	public Point3D position;
 	
 	private Vector3D materialAmbient;
@@ -20,7 +22,7 @@ public class Character {
 	private float zRotation;
 	
 	
-	public Character(Shader3D shader, Point3D position, Vector3D matAmbient, Vector3D matDiffuse, Vector3D matSpecular, float shine) {
+	public Character(Shader shader, Point3D position, Vector3D matAmbient, Vector3D matDiffuse, Vector3D matSpecular, float shine) {
 		this.shader = shader;
 		this.position = position;
 		this.materialAmbient = matAmbient;

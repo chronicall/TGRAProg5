@@ -3,20 +3,20 @@ package environment;
 import java.util.HashMap;
 import java.util.Map;
 
-import shaders.Shader3D;
-import shapes.BoxGraphic;
-import utils.ModelMatrix;
-import utils.Point3D;
-import utils.Vector3D;
+import graphics.ModelMatrix;
+import graphics.Point3D;
+import graphics.Vector3D;
+import graphics.shapes.BoxGraphic;
+import shaders.Shader;
 
 public class Board {
-	private static Shader3D shader;
+	private static Shader shader;
 	private static int width;
 	private static int height;
 	
 	private static HashMap<Point3D, Vector3D> boxMap;
 	
-	public static void create(Shader3D shader, int width, int height) {
+	public static void create(Shader shader, int width, int height) {
 		Board.shader = shader;
 		Board.width = width;
 		Board.height = height;
@@ -39,7 +39,7 @@ public class Board {
 		ModelMatrix.main.addTranslation(width/2, 0, width/2);
 		ModelMatrix.main.addScale(width, 0.5f, height);
 		Board.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawBaseWall();
+		BoxGraphic.drawSolidCube(Board.shader, null, null);
 		ModelMatrix.main.popMatrix();
 		
 		Board.drawSurrounding();
@@ -55,7 +55,7 @@ public class Board {
 		ModelMatrix.main.addTranslation(boxPoint.x, boxPoint.y, boxPoint.z);
 		ModelMatrix.main.addScale(boxVector.x, boxVector.y, boxVector.z);
 		Board.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(Board.shader, null, null);
 		ModelMatrix.main.popMatrix();		
 		boxMap.put(boxPoint, boxVector);
 		
@@ -68,7 +68,7 @@ public class Board {
 		ModelMatrix.main.addTranslation(boxPoint.x, boxPoint.y, boxPoint.z);
 		ModelMatrix.main.addScale(boxVector.x, boxVector.y, boxVector.z);
 		Board.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(Board.shader, null, null);
 		ModelMatrix.main.popMatrix();
 		boxMap.put(boxPoint, boxVector);
 		
@@ -81,7 +81,7 @@ public class Board {
 		ModelMatrix.main.addTranslation(boxPoint.x, boxPoint.y, boxPoint.z);
 		ModelMatrix.main.addScale(boxVector.x, boxVector.y, boxVector.z);
 		Board.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(Board.shader, null, null);
 		ModelMatrix.main.popMatrix();
 		boxMap.put(boxPoint, boxVector);
 		

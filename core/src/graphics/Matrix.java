@@ -1,4 +1,4 @@
-package utils;
+package graphics;
 
 import java.nio.FloatBuffer;
 import java.util.Stack;

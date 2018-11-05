@@ -1,12 +1,12 @@
 package entities;
 
-import shaders.Shader3D;
-import utils.Point3D;
-import utils.Vector3D;
+import graphics.Point3D;
+import graphics.Vector3D;
+import shaders.Shader;
 
 public class Enemy extends Character {
 	
-	public Enemy(Shader3D shader, Point3D position, Vector3D matAmbient, Vector3D matDiffuse, Vector3D matSpecular, float shine) {
+	public Enemy(Shader shader, Point3D position, Vector3D matAmbient, Vector3D matDiffuse, Vector3D matSpecular, float shine) {
 		super(shader, position, matAmbient, matDiffuse, matSpecular, shine);
 	}
 	
