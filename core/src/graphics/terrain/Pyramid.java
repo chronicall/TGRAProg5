@@ -1,4 +1,4 @@
-package environment;
+package graphics.terrain;
 
 import graphics.ModelMatrix;
 import graphics.shapes.BoxGraphic;

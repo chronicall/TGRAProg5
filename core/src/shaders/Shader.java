@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 
 import graphics.Material;
+import graphics.terrain.TerrainTexturePack;
 
 public class Shader {
 	private int renderingProgramID;
@@ -21,6 +22,8 @@ public class Shader {
 	private int viewMatrixLoc;
 	private int projectionMatrixLoc;
 	
+	private int textureTilingValueLoc;
+	
 	private boolean usesDiffuseTexture = false;
 	private int usesDiffuseTextureLoc;
 	private int diffuseTextureLoc;
@@ -30,6 +33,17 @@ public class Shader {
 	private int specularTextureLoc;
 
 	private int eyePositionLoc;
+	
+	private int skyColourLoc;
+	private int fogDensityLoc;
+	private int fogGradientLoc;
+	
+	private int isTerrainLoc;
+	private int terrainTextureLoc;
+	private int terrainRTextureLoc;
+	private int terrainGTextureLoc;
+	private int terrainBTextureLoc;
+	private int terrainBlendMapLoc;
 	
 	private int materialAmbientLoc;
 	private int materialDiffuseLoc;
@@ -50,8 +64,8 @@ public class Shader {
 		String vertexShaderString;
 		String fragmentShaderString;
 
-		vertexShaderString = Gdx.files.internal("shaders/mazeFragmentLighting3D.vert").readString();
-		fragmentShaderString =  Gdx.files.internal("shaders/mazeFragmentLighting3D.frag").readString();
+		vertexShaderString = Gdx.files.internal("shaders/vertexShader.vert").readString();
+		fragmentShaderString =  Gdx.files.internal("shaders/fragmentShader.frag").readString();
 		
 		this.vertexShaderID = Gdx.gl.glCreateShader(GL20.GL_VERTEX_SHADER);
 		this.fragmentShaderID = Gdx.gl.glCreateShader(GL20.GL_FRAGMENT_SHADER);
@@ -86,6 +100,8 @@ public class Shader {
 		this.modelMatrixLoc				= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_modelMatrix");
 		this.viewMatrixLoc				= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_viewMatrix");
 		this.projectionMatrixLoc		= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_projectionMatrix");
+		
+		this.textureTilingValueLoc		= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_textureTilingValue");
 
 		this.usesDiffuseTextureLoc		= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_usesDiffuseTexture");
 		this.diffuseTextureLoc			= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_diffuseTexture");
@@ -94,6 +110,17 @@ public class Shader {
 		this.specularTextureLoc			= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_specularTexture");
 
 		this.eyePositionLoc				= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_eyePosition");
+		
+		this.skyColourLoc				= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_skyColour");
+		this.fogDensityLoc				= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_fogDensity");
+		this.fogGradientLoc				= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_fogGradient");
+		
+		this.isTerrainLoc				= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_isTerrain");
+		this.terrainTextureLoc			= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_terrain.terrainTexture");
+		this.terrainRTextureLoc			= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_terrain.rTexture");
+		this.terrainGTextureLoc			= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_terrain.gTexture");
+		this.terrainBTextureLoc			= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_terrain.bTexture");
+		this.terrainBlendMapLoc			= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_terrain.blendMap");
 		
 		this.materialAmbientLoc			= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_material.ambient");
 		this.materialDiffuseLoc			= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_material.diffuse");
@@ -124,6 +151,10 @@ public class Shader {
 	
 	public int getUVPointer() {
 		return this.uvLoc;
+	}
+	
+	public void setTextureTilingValue(float tiling) {
+		Gdx.gl.glUniform1f(this.textureTilingValueLoc, tiling);
 	}
 	
 	public void setDiffuseTexture(Texture tex) {
@@ -172,6 +203,46 @@ public class Shader {
 	
 	public void setEyePosition(float x, float y, float z, float w) {
 		Gdx.gl.glUniform4f(this.eyePositionLoc, x, y, z, w);
+	}
+	
+	public void setSkyColour(float r, float g, float b, float a) {
+		Gdx.gl.glUniform4f(this.skyColourLoc, r, g, b, a);
+	}
+	public void setFogDensity(float density) {
+		Gdx.gl.glUniform1f(this.fogDensityLoc, density);
+	}
+	public void setFogGradient(float gradient) {
+		Gdx.gl.glUniform1f(this.fogGradientLoc, gradient);
+	}
+	
+	public void setIsTerrain(float isTerrain) {
+		Gdx.gl.glUniform1f(this.isTerrainLoc, isTerrain);
+	}
+	public void setTerrainTextures(TerrainTexturePack textures, Texture blendMap) {
+		textures.getTerrainTexture().bind(0);
+		Gdx.gl.glUniform1i(this.terrainTextureLoc, 0);
+		Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_REPEAT);
+		Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
+		
+		textures.getrTexture().bind(1);
+		Gdx.gl.glUniform1i(this.terrainRTextureLoc, 1);
+		Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_REPEAT);
+		Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
+		
+		textures.getgTexture().bind(2);
+		Gdx.gl.glUniform1i(this.terrainGTextureLoc, 2);
+		Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_REPEAT);
+		Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
+		
+		textures.getbTexture().bind(3);
+		Gdx.gl.glUniform1i(this.terrainBTextureLoc, 3);
+		Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_REPEAT);
+		Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
+		
+		blendMap.bind(4);
+		Gdx.gl.glUniform1i(this.terrainBlendMapLoc, 4);
+		Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_REPEAT);
+		Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
 	}
 	
 	public void setMaterial(Material material) {

@@ -33,9 +33,9 @@ public class Camera {
 	// Player instance to get access to the position
 	private Player player;
 	
-	public Camera(Player player) {
+	public Camera(Player player, Point3D eye) {
 		this.player = player;
-		this.eye = new Point3D();
+		this.eye = eye;
 		this.u = new Vector3D(1.0f, 0.0f, 0.0f);
 		this.v = new Vector3D(0.0f, 1.0f, 0.0f);
 		this.n = new Vector3D(0.0f, 0.0f, 1.0f);

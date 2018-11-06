@@ -36,4 +36,12 @@ public class Point3D {
 	public Vector3D different(Point3D p1) {
 		return new Vector3D(this.x - p1.x, this.y - p1.y, this.z - p1.z);
 	}
+	
+	public String toString() {
+		return "(Point: {X: " + this.x + ", Y: " + this.y + ", Z: " + this.z + "})";
+	}
+	
+	public boolean equals(Point3D p) {
+		return this.x == p.x && this.y == p.y && this.z == p.z;
+	}
 }

@@ -24,7 +24,6 @@ public class MeshModel {
 	}
 
 	public void draw(Shader shader) {
-
 		for(MeshModelNode node : nodes)
 		{
 			ModelMatrix.main.pushMatrix();
@@ -53,7 +52,9 @@ public class MeshModel {
 				
 				Gdx.gl.glVertexAttribPointer(shader.getVertexPointer(), 3, GL20.GL_FLOAT, false, 0, part.part.mesh.vertices);
 				Gdx.gl.glVertexAttribPointer(shader.getNormalPointer(), 3, GL20.GL_FLOAT, false, 0, part.part.mesh.normals);
-				Gdx.gl.glVertexAttribPointer(shader.getUVPointer(), 2, GL20.GL_FLOAT, false, 0, part.part.mesh.uv);
+				if (part.part.mesh.uv != null) {
+					Gdx.gl.glVertexAttribPointer(shader.getUVPointer(), 2, GL20.GL_FLOAT, false, 0, part.part.mesh.uv);
+				}
 
 				if(part.part.type.equals("TRIANGLES"))
 				{

@@ -56,6 +56,14 @@ struct SpotLight {
     vec4 specular;
 };
 
+struct Terrain {
+	sampler2D terrainTexture;
+	sampler2D rTexture;
+	sampler2D gTexture;
+	sampler2D bTexture;
+	sampler2D blendMap;
+};
+
 uniform float u_usesDiffuseTexture;
 uniform sampler2D u_diffuseTexture;
 
@@ -63,14 +71,20 @@ uniform float u_usesSpecularTexture;
 uniform sampler2D u_specularTexture;
 
 uniform vec4 u_lightColour;
+uniform vec4 u_skyColour;
 uniform Material u_material;
 
 uniform vec4 u_globalAmbient;
+
+uniform float u_isTerrain;
+uniform Terrain u_terrain;
+uniform float u_textureTilingValue;
 
 varying vec2 v_uv;
 varying vec4 v_normal;
 varying vec4 v_s;
 varying vec4 v_h;
+varying float v_visibility;
 
 /*
 vec4 posLightValue(Light light, vec4 normal, vec4 fragmentPosition, vec4 v);
@@ -81,15 +95,29 @@ vec4 spotLightValue(SpotLight light, vec4 normal, vec4 fragmentPosition, vec4 v)
 
 void main()
 {
+	vec4 terrainColour = vec4(1.0); 
+	if (u_isTerrain == 1.0)	{
+		vec4 blendMapColour = texture2D(u_terrain.blendMap, v_uv);
+		float terrainTextureAmount = 1.0 - (blendMapColour.r + blendMapColour.g + blendMapColour.b);
+		vec2 uvTiled = v_uv * u_textureTilingValue;
+		vec4 terrainTextureColour = texture2D(u_terrain.terrainTexture, uvTiled) * terrainTextureAmount;
+		vec4 rTextureColour = texture2D(u_terrain.rTexture, uvTiled) * blendMapColour.r;
+		vec4 gTextureColour = texture2D(u_terrain.gTexture, uvTiled) * blendMapColour.g;
+		vec4 bTextureColour = texture2D(u_terrain.bTexture, uvTiled) * blendMapColour.b;
+		
+		terrainColour = terrainTextureColour + rTextureColour + gTextureColour + bTextureColour;
+	} else {
+	}
 	vec4 materialDiffuse;
-	if(u_usesDiffuseTexture >= 1.0) {
+	if (u_usesDiffuseTexture == 1.0) {
 		materialDiffuse = texture2D(u_diffuseTexture, v_uv);
 	} else {
 		materialDiffuse = u_material.diffuse;
 	}
+	materialDiffuse = materialDiffuse * terrainColour;
 	
 	vec4 materialSpecular;
-	if(u_usesSpecularTexture >= 1.0) {
+	if (u_usesSpecularTexture == 1.0) {
 		materialDiffuse = texture2D(u_specularTexture, v_uv);
 	} else {
 		materialSpecular = u_material.specular;
@@ -107,6 +135,7 @@ void main()
 	vec4 specular = pow(phong, u_material.shininess) * u_lightColour * materialSpecular;
 	
 	gl_FragColor = ambient + diffuse + specular + u_material.emission;
+	gl_FragColor = mix(u_skyColour, gl_FragColor, v_visibility);
 }
 
 /*

@@ -1,5 +1,6 @@
 package environment;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import graphics.ModelMatrix;
@@ -14,10 +15,13 @@ public class Board {
 	
 	private static HashMap<Point3D, Vector3D> boxMap;
 	
+	private static ArrayList<Platform> platforms;
+	
 	public static void create(int width, int height) {
 		Board.width = width;
 		Board.height = height;
 		Board.boxMap = new HashMap<Point3D, Vector3D>();
+		Board.platforms = new ArrayList<Platform>();
 	}
 
 	public static void newLevel() {

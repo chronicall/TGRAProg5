@@ -52,4 +52,12 @@ public class Vector3D {
 		this.y = y;
 		this.z = z;
 	}
+	
+	public String toString() {
+		return "(Point: {X: " + this.x + ", Y: " + this.y + ", Z: " + this.z + "})";
+	}
+
+	public boolean equals(Vector3D v) {
+		return this.x == v.x && this.y == v.y && this.z == v.z;
+	}
 }

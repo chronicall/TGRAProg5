@@ -51,7 +51,7 @@ public class Player extends Character {
 	public void update(float deltaTime) {
 		super.update(deltaTime);
 		// Keeping the position updated makes for less calls to get the origin point
-		this.position = this.origin.getOrigin();
+		//this.position = this.origin.getOrigin();
 		float playAngle = TURN_SPEED * deltaTime;
 		
 		// Update the angle the player is rotated by
@@ -71,7 +71,7 @@ public class Player extends Character {
 			this.origin.addTranslation(vecZ.x, vecZ.y, vecZ.z);
 		}
 		if (Gdx.input.isKeyPressed(Keys.S)) {
-			this.origin.addTranslation(-vecZ.x, -vecZ.y, -vecZ.z);
+			this.origin.addTranslation(-vecZ.x, vecZ.y, -vecZ.z);
 		}
 		if (Gdx.input.isKeyPressed(Keys.A)) {
 			this.origin.addTranslation(vecX.x, vecX.y, vecX.z);

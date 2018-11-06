@@ -38,6 +38,7 @@ public class G3DJModelLoader {
 				return null;
 			}
 			int vertexFill = 0;
+			boolean uvCoords = false;
 			for(int attributeNum = 2; attributeNum < attributes.length; attributeNum++)
 			{
 //				System.out.println(attributes[attributeNum]);
@@ -45,7 +46,7 @@ public class G3DJModelLoader {
 				if(attributes[attributeNum].equals("COLORPACKED")) { vertexFill += 1; }
 				if(attributes[attributeNum].equals("TANGENT")) { vertexFill += 3; }
 				if(attributes[attributeNum].equals("BINORMAL")) { vertexFill += 3; }
-				if(attributes[attributeNum].equals("TEXCOORD0")) { vertexFill += 2; }
+				if(attributes[attributeNum].equals("TEXCOORD0")) { uvCoords = true; vertexFill += 2; }
 				if(attributes[attributeNum].equals("BLENDWEIGHT")) { vertexFill += 2; }
 			}
 
@@ -55,8 +56,10 @@ public class G3DJModelLoader {
 			mesh.vertices.rewind();
 			mesh.normals = BufferUtils.newFloatBuffer(vertexCount * 3);
 			mesh.normals.rewind();
-			mesh.uv = BufferUtils.newFloatBuffer(vertexCount * 2);
-			mesh.uv.rewind();
+			if (uvCoords) {
+				mesh.uv = BufferUtils.newFloatBuffer(vertexCount * 2);
+				mesh.uv.rewind();
+			}
 			int bufferIndex = 0;
 			for(int v = 0; v < vertexCount; v++)
 			{
@@ -68,8 +71,10 @@ public class G3DJModelLoader {
 				}
 				// TODO: UV coords aren't always present, have some boolean check
 				// 		 to determine whether or not to add that.
-				for(int i = 0; i < 2; i++) {
-					mesh.uv.put(vertices[bufferIndex++]);
+				if (uvCoords) {
+					for(int i = 0; i < 2; i++) {
+						mesh.uv.put(vertices[bufferIndex++]);
+					}
 				}
 //				for(int i = 0; i < vertexFill; i++) {
 //					bufferIndex++;
@@ -77,7 +82,9 @@ public class G3DJModelLoader {
 			}
 			mesh.vertices.rewind();
 			mesh.normals.rewind();
-			mesh.uv.rewind();
+			if (uvCoords) {
+				mesh.uv.rewind();
+			}
 //			System.out.println(vertices.length);
 
 			Object[] parts = getObjectArray(meshDesc, "parts");
@@ -306,6 +313,19 @@ public class G3DJModelLoader {
 	{
 		if(((JsonObject)jsonObject).get(key) == null) return 0;
 		return ((Long)((JsonObject)jsonObject).get(key)).intValue();
+	}
+	
+	private static int[] getIntArray(Object jsonObject, String key)
+	{
+		Object[] obArray = getObjectArray(jsonObject, key);
+		if(obArray == null) return null;
+		int[] intArray = new int[obArray.length];
+		int i = 0;
+		for(Object f : obArray)
+		{
+			intArray[i++] = ((Long)f).shortValue();
+		}
+		return intArray;
 	}
 
 	private static short[] getShortArray(Object jsonObject, String key)

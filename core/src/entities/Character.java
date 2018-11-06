@@ -51,6 +51,7 @@ public class Character {
 	
 	public void update(float deltaTime) {
 		// Character wide updates
+		this.position = this.origin.getOrigin();
 	}
 	
 	public float getXRotation() {

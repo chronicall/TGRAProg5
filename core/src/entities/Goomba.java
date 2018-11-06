@@ -14,18 +14,16 @@ public class Goomba extends Enemy {
 	private boolean yMotion;
 	private boolean up;
 	private Point3D originalPosition;
-	private float height;
 
 	public Goomba(
 			Shader shader, MeshModel model, Texture diffuseTexture, Texture specularTexture,
-			Material material, Point3D position, boolean yMotion, float height
+			Material material, Point3D position, boolean yMotion
 	) {
 		super(shader, model, diffuseTexture, specularTexture, material, position);
 		
 		this.yMotion = yMotion;
 		this.up = true;
 		this.originalPosition = position;
-		this.height = height;
 	}
 	
 	public void display() {
@@ -34,8 +32,7 @@ public class Goomba extends Enemy {
 		ModelMatrix.main.addTransformation(this.origin.matrix);
 		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		if (this.model == null) {
-		//BoxGraphic.drawSolidCube();
-		SphereGraphic.drawSolidSphere(this.shader, this.diffuseTexture, this.specularTexture);
+			SphereGraphic.drawSolidSphere(this.shader, this.diffuseTexture, this.specularTexture);
 		} else {
 			this.model.draw(this.shader);
 		}
@@ -45,42 +42,28 @@ public class Goomba extends Enemy {
 	public void update(float deltaTime) {
 		super.update(deltaTime);
 		
-		Point3D originPoint = this.origin.getOrigin();
 		Vector3D move;
-		
 		if(yMotion) {
-			if(up)
-			{
+			if(up) {
 				move = new Vector3D(0.0f, 4.0f * deltaTime, 0.0f);
-			}
-			else {
+			} else {
 				move = new Vector3D(0.0f, -4.0f * deltaTime, 0.0f);				
 			}
-			
-			Point3D movingTo = originPoint.add(move);
-			
-			
-			if(movingTo.y > 12 || movingTo.y < 3.5) {
+			Point3D movingTo = this.position.add(move);
+			if(movingTo.y > 8 || movingTo.y < 0.5f) {
 				up = !up;
 			}
-		}
-		else {	
-			if(up)
-			{
+		} else {	
+			if(up) {
 				move = new Vector3D(0.0f, 0.0f, 4.0f * deltaTime);
-			}
-			else {
+			} else {
 				move = new Vector3D(0.0f, 0.0f, -4.0f * deltaTime);				
-			}
-			
-			Point3D movingTo = originPoint.add(move);
-						
-			if(Math.abs((movingTo.z - this.originalPosition.z)) > 5 || movingTo.z < 2 || movingTo.z > this.height - 1.0f) {
+			}			
+			Point3D movingTo = this.position.add(move);
+			if(Math.abs((movingTo.z - this.originalPosition.z)) > 5) {
 				up = !up;
 			}	
-			
 		}
-		
 		this.origin.addTranslation(move.x, move.y, move.z);
 	}
 
