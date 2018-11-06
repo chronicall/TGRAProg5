@@ -1,13 +1,20 @@
 package entities;
 
+import com.badlogic.gdx.graphics.Texture;
+
+import graphics.Material;
 import graphics.Point3D;
 import graphics.Vector3D;
+import graphics.shapes.g3djmodel.MeshModel;
 import shaders.Shader;
 
 public class Enemy extends Character {
 	
-	public Enemy(Shader shader, Point3D position, Vector3D matAmbient, Vector3D matDiffuse, Vector3D matSpecular, float shine) {
-		super(shader, position, matAmbient, matDiffuse, matSpecular, shine);
+	public Enemy(
+			Shader shader, MeshModel model, Texture diffuseTexture, Texture specularTexture,
+			Material material, Point3D position
+	) {
+		super(shader, model, diffuseTexture, specularTexture, material, position);
 	}
 	
 	public void display() {

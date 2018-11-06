@@ -29,13 +29,18 @@ Controls go here.
   - [ ] Can use Bezier motion here
   - [ ] Enemy that is tied to one spot (chain chomps)
   - [ ] Moving enemies (goombas)
-- [ ] Super Sario (character)
+- [x] Super Sario (character)
   - [x] Movement
   - [x] Jumping
-  - [ ] Design/look, shapes/texture/etc.
+  - [x] Design/look, shapes/texture/etc.
+- [ ] Collission
+  - [ ] Player collission with enemies
+  - [ ] Player collission with world/objects
+    - [x] Floor
+    - [ ] Objects/obstacles
 - [ ] Textures
-  - [ ] Player
-  - [ ] Enemies
+  - [x] Player
+  - [x] Enemies
   - [ ] Objects/world
 - [ ] Extra stuff
   - [ ] Stars to collect

@@ -6,6 +6,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 
+import graphics.Material;
+
 public class Shader {
 	private int renderingProgramID;
 	private int vertexShaderID;
@@ -124,46 +126,37 @@ public class Shader {
 		return this.uvLoc;
 	}
 	
-	public void setDiffuseTexture(Texture tex)
-	{
-		if(tex == null)
-		{
+	public void setDiffuseTexture(Texture tex) {
+		if(tex == null) {
 			Gdx.gl.glUniform1f(this.usesDiffuseTextureLoc, 0.0f);
 			this.usesDiffuseTexture = false;
-		}
-		else
-		{
+		} else {
 			tex.bind(0);
 			Gdx.gl.glUniform1i(this.diffuseTextureLoc, 0);
-			Gdx.gl.glUniform1f(this.usesDiffuseTextureLoc, 1.0f);
-			usesDiffuseTexture = true;
+			Gdx.gl.glUniform1f(this.usesDiffuseTextureLoc, 2.0f);
+			this.usesDiffuseTexture = true;
 
 			Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_REPEAT);
 			Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
 		}
 	}
 	
-	public void setSpecularTexture(Texture tex)
-	{
-		if(tex == null)
-		{
+	public void setSpecularTexture(Texture tex) {
+		if(tex == null) {
 			Gdx.gl.glUniform1f(this.usesSpecularTextureLoc, 0.0f);
 			this.usesSpecularTexture = false;
-		}
-		else
-		{
+		} else {
 			tex.bind(0);
 			Gdx.gl.glUniform1i(this.specularTextureLoc, 0);
-			Gdx.gl.glUniform1f(this.usesSpecularTextureLoc, 1.0f);
-			usesSpecularTexture = true;
+			Gdx.gl.glUniform1f(this.usesSpecularTextureLoc, 2.0f);
+			this.usesSpecularTexture = true;
 
 			Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_REPEAT);
 			Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
 		}
 	}
 	
-	public boolean usesTextures()
-	{
+	public boolean usesTextures() {
 		return (this.usesDiffuseTexture || this.usesSpecularTexture);
 	}
 	
@@ -179,6 +172,14 @@ public class Shader {
 	
 	public void setEyePosition(float x, float y, float z, float w) {
 		Gdx.gl.glUniform4f(this.eyePositionLoc, x, y, z, w);
+	}
+	
+	public void setMaterial(Material material) {
+		Gdx.gl.glUniform4f(this.materialAmbientLoc, material.ambient.r, material.ambient.g, material.ambient.b, material.ambient.a);
+		Gdx.gl.glUniform4f(this.materialDiffuseLoc, material.diffuse.r, material.diffuse.g, material.diffuse.b, material.diffuse.a);
+		Gdx.gl.glUniform4f(this.materialSpecularLoc, material.specular.r, material.specular.g, material.specular.b, material.specular.a);
+		Gdx.gl.glUniform4f(this.materialEmissionLoc, material.emission.r, material.emission.g, material.emission.b, material.emission.a);
+		Gdx.gl.glUniform1f(this.materialShininessLoc, material.shininess);
 	}
 	
 	public void setMaterialAmbient(float r, float g, float b, float a) {

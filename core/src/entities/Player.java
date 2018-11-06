@@ -4,11 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
 
+import graphics.Material;
 import graphics.ModelMatrix;
 import graphics.Point3D;
 import graphics.Vector3D;
 import graphics.shapes.BoxGraphic;
 import graphics.shapes.SphereGraphic;
+import graphics.shapes.g3djmodel.MeshModel;
 import shaders.Shader;
 
 public class Player extends Character {
@@ -22,23 +24,27 @@ public class Player extends Character {
 	private float upVelocity;
 	private boolean isJumping;
 	
-	private Texture texture;
-	
-	public Player(Shader shader, Texture texture, Point3D position, Vector3D matAmbient, Vector3D matDiffuse, Vector3D matSpecular, float shine) {
-		super(shader, position, matAmbient, matDiffuse, matSpecular, shine);
+	public Player(
+			Shader shader, MeshModel model, Texture diffuseTexture, Texture specularTexture, 
+			Material material, Point3D position
+	) {
+		super(shader, model, diffuseTexture, specularTexture, material, position);
 		this.upVelocity = 0.0f;
 		this.isJumping = false;
-		this.texture = texture;
 	}
 	
 	public void display() {
 		super.display();
-		// TODO: Make the character look fancier. TEXTURES/MODELS
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.addTransformation(this.origin.matrix);
+		ModelMatrix.main.addScale(13, 13, 13);
 		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube(this.shader, this.texture, null);
-		SphereGraphic.drawOutlineSphere(this.shader, this.texture, null);
+		if (this.model == null) {
+			BoxGraphic.drawSolidCube(this.shader, this.diffuseTexture, this.specularTexture);
+			SphereGraphic.drawOutlineSphere(this.shader, this.diffuseTexture, this.specularTexture);
+		} else {
+			this.model.draw(this.shader);
+		}
 		ModelMatrix.main.popMatrix();
 	}
 	

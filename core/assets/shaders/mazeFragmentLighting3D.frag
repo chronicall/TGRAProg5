@@ -82,14 +82,14 @@ vec4 spotLightValue(SpotLight light, vec4 normal, vec4 fragmentPosition, vec4 v)
 void main()
 {
 	vec4 materialDiffuse;
-	if (u_usesDiffuseTexture == 1.0) {
+	if(u_usesDiffuseTexture >= 1.0) {
 		materialDiffuse = texture2D(u_diffuseTexture, v_uv);
 	} else {
 		materialDiffuse = u_material.diffuse;
 	}
 	
 	vec4 materialSpecular;
-	if (u_usesSpecularTexture == 1.0) {
+	if(u_usesSpecularTexture >= 1.0) {
 		materialDiffuse = texture2D(u_specularTexture, v_uv);
 	} else {
 		materialSpecular = u_material.specular;
@@ -103,7 +103,7 @@ void main()
 	float phong = max(0.0, dot(v_normal, v_h) / (length_normal * length_h));
 	
 	vec4 ambient = u_globalAmbient * u_material.ambient;
-	vec4 diffuse = lambert * u_lightColour * u_material.diffuse;
+	vec4 diffuse = lambert * u_lightColour * materialDiffuse;
 	vec4 specular = pow(phong, u_material.shininess) * u_lightColour * materialSpecular;
 	
 	gl_FragColor = ambient + diffuse + specular + u_material.emission;

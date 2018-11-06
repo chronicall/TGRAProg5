@@ -156,24 +156,26 @@ public class G3DJModelLoader {
 
 			model.materials.add(meshMaterial);
 			
+			// TODO: add multiple textures
 			Object[] textures = getObjectArray(materialDesc, "textures");
-			for (Object textureDesc : textures) {
-				meshMaterial.meshTexture = new MeshTexture();
-				
-				String textureID = getString(textureDesc, "id");
-//				System.out.println("texture ID: " + textureID);
-				meshMaterial.meshTexture.id = textureID;
-				
-				String textureFileName = getString(textureDesc, "filename");
-				meshMaterial.meshTexture.fileName = textureFileName;
-				
-				String textureType = getString(textureDesc, "type");
-				meshMaterial.meshTexture.type = textureType;
-				
-				Texture tex = new Texture(Gdx.files.internal(textureFileName));
-				meshMaterial.meshTexture.texture = tex;
+			if (textures != null) {
+				for (Object textureDesc : textures) {
+					meshMaterial.meshTexture = new MeshTexture();
+					
+					String textureID = getString(textureDesc, "id");
+	//				System.out.println("texture ID: " + textureID);
+					meshMaterial.meshTexture.id = textureID;
+					
+					String textureFileName = getString(textureDesc, "filename");
+					meshMaterial.meshTexture.fileName = textureFileName;
+					
+					String textureType = getString(textureDesc, "type");
+					meshMaterial.meshTexture.type = textureType;
+					
+					Texture tex = new Texture(Gdx.files.internal(textureFileName));
+					meshMaterial.meshTexture.texture = tex;
+				}
 			}
-			
 		}
 		Object[] nodes = getObjectArray(graph, "nodes");
 		for(Object nodeDesc : nodes)

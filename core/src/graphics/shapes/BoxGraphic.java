@@ -99,9 +99,9 @@ public class BoxGraphic {
 							0.6666f, 0.6666f,
 							
 							0.0f, 0.0f,
-							2.0f, 0.0f,
-							2.0f, 2.0f,
-							0.0f, 2.0f,
+							1.0f, 0.0f,
+							1.0f, 1.0f,
+							0.0f, 1.0f,
 							
 							0.0f, 1.0f,
 							1.0f, 1.0f,
@@ -131,29 +131,19 @@ public class BoxGraphic {
 
 		Gdx.gl.glVertexAttribPointer(shader.getVertexPointer(), 3, GL20.GL_FLOAT, false, 0, vertexBuffer);
 		Gdx.gl.glVertexAttribPointer(shader.getNormalPointer(), 3, GL20.GL_FLOAT, false, 0, normalBuffer);
-		//Gdx.gl.glVertexAttribPointer(shader.getUVPointer(), 2, GL20.GL_FLOAT, false, 0, uvBuffer);
+		Gdx.gl.glVertexAttribPointer(shader.getUVPointer(), 2, GL20.GL_FLOAT, false, 0, uvBuffer);
 
 		Gdx.gl.glDrawElements(GL20.GL_TRIANGLES, 36, GL20.GL_UNSIGNED_SHORT, indexBuffer);
 	}
 
 	public static void drawOutlineCube(Shader shader, Texture diffuseTexture, Texture specularTexture) {
 		shader.setDiffuseTexture(diffuseTexture);
+		shader.setSpecularTexture(specularTexture);
 
 		Gdx.gl.glVertexAttribPointer(shader.getVertexPointer(), 3, GL20.GL_FLOAT, false, 0, vertexBuffer);
 		Gdx.gl.glVertexAttribPointer(shader.getNormalPointer(), 3, GL20.GL_FLOAT, false, 0, normalBuffer);
-		//Gdx.gl.glVertexAttribPointer(shader.getUVPointer(), 2, GL20.GL_FLOAT, false, 0, uvBuffer);
+		Gdx.gl.glVertexAttribPointer(shader.getUVPointer(), 2, GL20.GL_FLOAT, false, 0, uvBuffer);
 
 		Gdx.gl.glDrawElements(GL20.GL_LINES, 36, GL20.GL_UNSIGNED_SHORT, indexBuffer);
-
-		/*Gdx.gl.glVertexAttribPointer(vertexPointer, 3, GL20.GL_FLOAT, false, 0, vertexBuffer);
-		Gdx.gl.glVertexAttribPointer(normalPointer, 3, GL20.GL_FLOAT, false, 0, normalBuffer);
-		
-		Gdx.gl.glDrawArrays(GL20.GL_LINE_LOOP, 0, 4);
-		Gdx.gl.glDrawArrays(GL20.GL_LINE_LOOP, 4, 4);
-		Gdx.gl.glDrawArrays(GL20.GL_LINE_LOOP, 8, 4);
-		Gdx.gl.glDrawArrays(GL20.GL_LINE_LOOP, 12, 4);
-		Gdx.gl.glDrawArrays(GL20.GL_LINE_LOOP, 16, 4);
-		Gdx.gl.glDrawArrays(GL20.GL_LINE_LOOP, 20, 4);*/
 	}
-
 }

@@ -11,6 +11,8 @@ import entities.ChainChomp;
 import entities.Goomba;
 import entities.Player;
 import environment.Board;
+import graphics.Colour;
+import graphics.Material;
 import graphics.ModelMatrix;
 import graphics.Point3D;
 import graphics.Vector3D;
@@ -28,21 +30,20 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 	private Point3D eye;
 	private Vector3D up;
 	
-	private float angle;
-	
 	private int width;
 	private int height;
 	
-	MeshModel model;
-	
 	private Player player;
+	private MeshModel playerModel;
 	private Texture playerTexture;
 	
 	private Goomba goomba1, goomba2;
-	private Texture goombaTexture;
+	private MeshModel goombaModel;
 	
 	private ChainChomp chainChomp;
-	private Texture chainChomTexture;
+	private MeshModel chainChompModel;
+	
+	private Material sunMaterial;
 
 	@Override
 	public void create () {
@@ -53,12 +54,13 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		this.height = 50;
 		this.width = 50;
 		this.fov = 90.0f;
-		this.angle = 0.0f;
 		
 		this.shader = new Shader();
 		
 		this.playerTexture = new Texture(Gdx.files.internal("textures/dice.png"));
-		this.model = G3DJModelLoader.loadG3DJFromFile("chainChomp/chomp1.g3dj");
+		this.playerModel = G3DJModelLoader.loadG3DJFromFile("bowsette/Bowsette.g3dj");
+		this.goombaModel = G3DJModelLoader.loadG3DJFromFile("goomba/goomba.g3dj");
+		this.chainChompModel = G3DJModelLoader.loadG3DJFromFile("chainChomp/chomp.g3dj");
 		
 		ModelMatrix.main = new ModelMatrix();
 		ModelMatrix.main.loadIdentityMatrix();
@@ -66,50 +68,42 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 
 		BoxGraphic.create();
 		SphereGraphic.create();
-		Board.create(shader, this.width, this.height);
+		Board.create(this.width, this.height);
+		
+		this.sunMaterial = new Material();
+		this.sunMaterial.emission = new Colour(1,1,1,1);
+		
 		this.setup();
 	}
 	
 	private void setup() {
 		// Set up the player
 		Point3D playerPos = new Point3D(2.0f, 0.5f, 3.0f);
-		Vector3D playerAmbient = new Vector3D();
-		Vector3D playerDiffuse = new Vector3D();
-		Vector3D playerSpecular = new Vector3D();
-		float playerShine = 10.0f;
+		Material playerMaterial = new Material();
 		this.player = new Player(
-				this.shader, this.playerTexture, playerPos,
-				playerAmbient, playerDiffuse, playerSpecular, playerShine
+				this.shader, this.playerModel, this.playerTexture, null,
+				playerMaterial, playerPos
 		);
 		
 		// Set up the enemies
 		Point3D goomba1Pos = new Point3D(15.0f, 0.5f, 20.0f);
-		Vector3D goombaAmbient = new Vector3D();
-		Vector3D goombaDiffuse = new Vector3D();
-		Vector3D goombaSpecular = new Vector3D();
-		float goombaShine = 10.0f;
+		Material goombaMaterial = new Material();
 		this.goomba1 = new Goomba(
-				this.shader, goomba1Pos,
-				goombaAmbient, goombaDiffuse, goombaSpecular, goombaShine,
-				false, this.height
+				this.shader, this.goombaModel, null, null,
+				goombaMaterial, goomba1Pos, false, this.height
 		);
 		
 		Point3D goomba2Pos = new Point3D(20.0f, 0.5f, 10.0f);
 		this.goomba2 = new Goomba(
-				this.shader, goomba2Pos,
-				goombaAmbient, goombaDiffuse, goombaSpecular, goombaShine,
-				true, this.height
+				this.shader, this.goombaModel, null, null, 
+				goombaMaterial, goomba2Pos, true, this.height
 		);
 		
 		Point3D chainChompPos = new Point3D(10.0f, 0.5f, 10.0f);
-		Vector3D chainChompAmbient = new Vector3D();
-		Vector3D chainChompDiffuse = new Vector3D();
-		Vector3D chainChompSpecular = new Vector3D();
-		float chainChompShine = 10.0f;
+		Material chainChompMaterial = new Material();
 		this.chainChomp = new ChainChomp(
-				this.shader, chainChompPos,
-				chainChompAmbient, chainChompDiffuse, chainChompSpecular, chainChompShine,
-				this.height, this.width
+				this.shader, this.chainChompModel, null, null, 
+				chainChompMaterial, chainChompPos, this.height, this.width
 		);
 		
 		// Set up the camera
@@ -128,8 +122,6 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 	private void update() {
 		float deltaTime = Gdx.graphics.getDeltaTime();
 		
-		this.angle += 180.0f * deltaTime;
-
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
 			Gdx.app.exit();
 		}
@@ -154,12 +146,10 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		this.shader.setEyePosition(this.camera.eye.x, this.camera.eye.y, this.camera.eye.z, 1.0f);
 		
 		ModelMatrix.main.loadIdentityMatrix();
+
+		// The "sun", show it as a glowing white orb. Ideally..
 		ModelMatrix.main.pushMatrix();
-		// The "sun", show it as a glowing white orb
-		this.shader.setMaterialAmbient(0, 0, 0, 1);
-		this.shader.setMaterialDiffuse(0, 0, 0, 1);
-		this.shader.setMaterialSpecular(0, 0, 0, 1);
-		this.shader.setMaterialEmission(1, 1, 1, 1);
+		this.shader.setMaterial(this.sunMaterial);
 		ModelMatrix.main.addTranslation(10, 15, 10);
 		ModelMatrix.main.addScale(0.5f, 0.5f, 0.5f);
 		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
@@ -170,46 +160,7 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		// no matter what.
 		this.shader.setMaterialEmission(0, 0, 0, 1);
 		
-		// Temporary coordinate frame. Red is X, green is Y, blue is Z
-		// REMOVE BEFORE HANDIN
-		ModelMatrix.main.pushMatrix();
-		this.shader.setMaterialDiffuse(1, 0, 0, 1.0f);
-		ModelMatrix.main.addTranslation(5, 0, 0);
-		ModelMatrix.main.addScale(10.0f, 0.2f, 0.2f);
-		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube(this.shader, null, null);
-		ModelMatrix.main.popMatrix();
-		
-		ModelMatrix.main.pushMatrix();
-		this.shader.setMaterialDiffuse(0, 1, 0, 1.0f);
-		ModelMatrix.main.addTranslation(0, 5, 0);
-		ModelMatrix.main.addScale(0.2f, 10.0f, 0.2f);
-		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube(this.shader, null, null);
-		ModelMatrix.main.popMatrix();
-		
-		ModelMatrix.main.pushMatrix();
-		this.shader.setMaterialDiffuse(0, 0, 1, 1.0f);
-		ModelMatrix.main.addTranslation(0, 0, 5);
-		ModelMatrix.main.addScale(0.2f, 0.2f, 10.0f);
-		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube(this.shader, null, null);
-		ModelMatrix.main.popMatrix();
-		// END REMOVE BEFORE HANDIN
-		
-		Board.drawBoard();
-		
-//		ModelMatrix.main.pushMatrix();
-//		ModelMatrix.main.addTranslation(4.0f, 4.0f, 8.0f);
-//		ModelMatrix.main.addRotation(this.angle, new Vector3D(1,1,1));
-//		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-//
-//		//BoxGraphic.drawSolidCube(shader, this.playerTexture, null);
-//		model.draw(shader);
-
-//		ModelMatrix.main.popMatrix();
-
-		
+		Board.drawBoard(this.shader);
 		// Draw all the entities
 		this.player.display();
 		this.goomba1.display();

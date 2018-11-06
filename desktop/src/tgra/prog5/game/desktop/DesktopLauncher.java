@@ -7,7 +7,7 @@ import tgra.prog5.game.Prog5Game;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.title = "Programming Assignment 5 - Sario"; // or whatever you like
+		config.title = "Programming Assignment 5 - This Is Not Mario";
 		config.height = 800;
 		config.width = 1280;
 		config.x = 150;

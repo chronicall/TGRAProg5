@@ -1,9 +1,13 @@
 package entities;
 
+import com.badlogic.gdx.graphics.Texture;
+
+import graphics.Material;
 import graphics.ModelMatrix;
 import graphics.Point3D;
 import graphics.Vector3D;
 import graphics.shapes.SphereGraphic;
+import graphics.shapes.g3djmodel.MeshModel;
 import shaders.Shader;
 
 public class Goomba extends Enemy {
@@ -12,9 +16,11 @@ public class Goomba extends Enemy {
 	private Point3D originalPosition;
 	private float height;
 
-	public Goomba(Shader shader, Point3D position, Vector3D matAmbient, Vector3D matDiffuse, Vector3D matSpecular,
-			float shine, boolean yMotion, float height) {
-		super(shader, position, matAmbient, matDiffuse, matSpecular, shine);
+	public Goomba(
+			Shader shader, MeshModel model, Texture diffuseTexture, Texture specularTexture,
+			Material material, Point3D position, boolean yMotion, float height
+	) {
+		super(shader, model, diffuseTexture, specularTexture, material, position);
 		
 		this.yMotion = yMotion;
 		this.up = true;
@@ -27,8 +33,12 @@ public class Goomba extends Enemy {
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.addTransformation(this.origin.matrix);
 		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		if (this.model == null) {
 		//BoxGraphic.drawSolidCube();
-		SphereGraphic.drawSolidSphere(this.shader, null, null);
+		SphereGraphic.drawSolidSphere(this.shader, this.diffuseTexture, this.specularTexture);
+		} else {
+			this.model.draw(this.shader);
+		}
 		ModelMatrix.main.popMatrix();
 	}
 	

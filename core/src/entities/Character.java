@@ -2,9 +2,10 @@ package entities;
 
 import com.badlogic.gdx.graphics.Texture;
 
+import graphics.Material;
 import graphics.ModelMatrix;
 import graphics.Point3D;
-import graphics.Vector3D;
+import graphics.shapes.g3djmodel.MeshModel;
 import shaders.Shader;
 
 public class Character {
@@ -12,23 +13,25 @@ public class Character {
 	public Shader shader;
 	public Point3D position;
 	
-	private Vector3D materialAmbient;
-	private Vector3D materialDiffuse;
-	private Vector3D materialSpecular;
-	private float materialShine;
+	protected MeshModel model;
+	protected Texture diffuseTexture;
+	protected Texture specularTexture;
+	protected Material material;
 	
-	private float xRotation;
-	private float yRotation;
-	private float zRotation;
+	protected float xRotation;
+	protected float yRotation;
+	protected float zRotation;
 	
-	
-	public Character(Shader shader, Point3D position, Vector3D matAmbient, Vector3D matDiffuse, Vector3D matSpecular, float shine) {
+	public Character(
+			Shader shader, MeshModel model, Texture diffuseTexture, Texture specularTexture,
+			Material material, Point3D position
+	) {
+		this.model = model;
+		this.diffuseTexture = diffuseTexture;
+		this.specularTexture = specularTexture;
 		this.shader = shader;
 		this.position = position;
-		this.materialAmbient = matAmbient;
-		this.materialDiffuse = matDiffuse;
-		this.materialSpecular = matSpecular;
-		this.materialShine = shine;
+		this.material = material;
 		
 		this.xRotation = 0.0f;
 		this.yRotation = 0.0f;
@@ -43,11 +46,7 @@ public class Character {
 	public void display() {
 		// Character wide display setup
 		// Material colours and shine values
-		this.shader.setMaterialAmbient(this.materialAmbient.x, this.materialAmbient.y, this.materialAmbient.z, 1.0f);
-		this.shader.setMaterialDiffuse(this.materialDiffuse.x, this.materialDiffuse.y, this.materialDiffuse.z, 1.0f);
-		this.shader.setMaterialSpecular(this.materialSpecular.x, this.materialSpecular.y, this.materialSpecular.z, 1.0f);
-		this.shader.setMaterialShiniess(this.materialShine);
-		this.shader.setMaterialEmission(0.2f, 0.2f, 0.2f, 0.2f);
+		this.shader.setMaterial(this.material);
 	}
 	
 	public void update(float deltaTime) {

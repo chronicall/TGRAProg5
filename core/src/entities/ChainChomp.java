@@ -2,10 +2,14 @@ package entities;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import com.badlogic.gdx.graphics.Texture;
+
+import graphics.Material;
 import graphics.ModelMatrix;
 import graphics.Point3D;
 import graphics.Vector3D;
 import graphics.shapes.SphereGraphic;
+import graphics.shapes.g3djmodel.MeshModel;
 import shaders.Shader;
 
 public class ChainChomp extends Enemy{
@@ -15,9 +19,11 @@ public class ChainChomp extends Enemy{
 	private float width;
 	private int chainLength;
 
-	public ChainChomp(Shader shader, Point3D position, Vector3D matAmbient, Vector3D matDiffuse, Vector3D matSpecular,
-			float shine, float height, float width) {
-		super(shader, position, matAmbient, matDiffuse, matSpecular, shine);
+	public ChainChomp(
+			Shader shader, MeshModel model, Texture diffuseTexture, Texture specularTexture,
+			Material material, Point3D position, float height, float width
+	) {
+		super(shader, model, diffuseTexture, specularTexture, material, position);
 		
 		this.chainPosition = position;
 		this.timeUntilMove = 2.0f;
@@ -31,8 +37,12 @@ public class ChainChomp extends Enemy{
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.addTransformation(this.origin.matrix);
 		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		//BoxGraphic.drawSolidCube();
-		SphereGraphic.drawSolidSphere(this.shader, null, null);
+		if (this.model == null) {
+			//BoxGraphic.drawSolidCube();
+			SphereGraphic.drawSolidSphere(this.shader, this.diffuseTexture, this.specularTexture);
+		} else {
+			this.model.draw(this.shader);
+		}
 		ModelMatrix.main.popMatrix();
 	}
 	
