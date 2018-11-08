@@ -31,9 +31,7 @@ import shaders.Shader;
 
 public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 	private Shader shader;
-	private int boardHeight;
-	private int boardWidth;
-	
+
 	private Camera camera;
 	private float fov;
 	private Point3D eye;
@@ -67,8 +65,6 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 //		Gdx.gl.glCullFace(GL20.GL_BACK);
 		Gdx.input.setInputProcessor(this);
 		
-		this.boardWidth = 100;
-		this.boardHeight = 100;
 		this.fov = 90.0f;
 		this.random = new Random();
 		
@@ -79,7 +75,7 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		this.goombaModel = G3DJModelLoader.loadG3DJFromFile("goomba/goomba.g3dj");
 		this.chainChompModel = G3DJModelLoader.loadG3DJFromFile("chainChomp/chomp.g3dj");
 		TerrainTexturePack terrainTextures = new TerrainTexturePack(
-				new Texture(Gdx.files.internal("textures/grass.png")),
+				new Texture(Gdx.files.internal("textures/grass2.png")),
 				new Texture(Gdx.files.internal("textures/dirt.png")),
 				new Texture(Gdx.files.internal("textures/grassFlowers.png")),
 				new Texture(Gdx.files.internal("textures/path.png"))
@@ -106,7 +102,7 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 
 		BoxGraphic.create();
 		SphereGraphic.create();
-		Board.create(this.boardWidth, this.boardHeight);
+		Board.create();
 		
 		this.sunMaterial = new Material();
 		this.sunMaterial.emission = new Colour(1,1,1,1);
@@ -210,6 +206,8 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		this.player.display();
 		this.goomba1.display();
 		this.goomba2.display();
+		Board.draw(this.shader);
+		
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.addTranslation(210.0f, 0.0f, 210.0f);
 		ModelMatrix.main.addScale(0.3f, 3.0f, 0.3f);

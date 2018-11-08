@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
 
+import environment.Board;
+import environment.Platform;
 import graphics.Material;
 import graphics.ModelMatrix;
 import graphics.Point3D;
@@ -37,7 +39,7 @@ public class Player extends Character {
 		super.display();
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.addTransformation(this.origin.matrix);
-		ModelMatrix.main.addScale(13, 13, 13);
+		ModelMatrix.main.addScale(5, 5, 5);
 		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		if (this.model == null) {
 			BoxGraphic.drawSolidCube(this.shader, this.diffuseTexture, this.specularTexture);
@@ -50,6 +52,9 @@ public class Player extends Character {
 	
 	public void update(float deltaTime) {
 		super.update(deltaTime);
+		// XXX: Quick and dirty way to offset the y position of the current model being used..
+		this.position.set(this.position.x, this.position.y + 1, this.position.z);
+		
 		// Keeping the position updated makes for less calls to get the origin point
 		//this.position = this.origin.getOrigin();
 		float playAngle = TURN_SPEED * deltaTime;
@@ -67,29 +72,45 @@ public class Player extends Character {
 		// Movement vectors, we only move along the X and Z axes with WASD.
 		Vector3D vecZ = new Vector3D(0.0f, 0.0f, RUN_SPEED * deltaTime);
 		Vector3D vecX = new Vector3D(RUN_SPEED * deltaTime, 0.0f, 0.0f);
+		Point3D displacementHorizontal;
 		if (Gdx.input.isKeyPressed(Keys.W)) {
-			this.origin.addTranslation(vecZ.x, vecZ.y, vecZ.z);
+			displacementHorizontal = this.detectCollissionHorizontal(this.position.add(vecZ)); 
+			if (displacementHorizontal.equals(new Point3D())) {
+				this.origin.addTranslation(vecZ.x, vecZ.y, vecZ.z);
+			}
 		}
 		if (Gdx.input.isKeyPressed(Keys.S)) {
-			this.origin.addTranslation(-vecZ.x, vecZ.y, -vecZ.z);
+			Vector3D down = vecZ.scale(-1);
+			displacementHorizontal = this.detectCollissionHorizontal(this.position.add(down));
+			if (displacementHorizontal.equals(new Point3D())) {
+				this.origin.addTranslation(vecZ.x, vecZ.y, -vecZ.z);
+			}
 		}
 		if (Gdx.input.isKeyPressed(Keys.A)) {
-			this.origin.addTranslation(vecX.x, vecX.y, vecX.z);
+			displacementHorizontal = this.detectCollissionHorizontal(this.position.add(vecX));
+			if (displacementHorizontal.equals(new Point3D())) {
+				this.origin.addTranslation(vecX.x, vecX.y, vecX.z);
+			}
 		}
 		if (Gdx.input.isKeyPressed(Keys.D)) {
-			this.origin.addTranslation(-vecX.x, -vecX.y, -vecX.z);
+			Vector3D right = vecX.scale(-1);
+			displacementHorizontal = this.detectCollissionHorizontal(this.position.add(right)); 
+			if (displacementHorizontal.equals(new Point3D())) {
+				this.origin.addTranslation(-vecX.x, vecX.y, vecX.z);
+			}
 		}
 		
 		// Force the player down on every frame.
 		this.upVelocity += GRAVITY * deltaTime;
 		this.origin.addTranslation(0, this.upVelocity * deltaTime, 0);
-		
 		// Check if falling through the terrain.
 		// If so, reset upward velocity and allow jumping again.
-		if (this.position.y < BASE_TERRAIN_HEIGHT) {
+		Point3D movingTo = new Point3D(0, this.position.y + this.upVelocity * deltaTime, 0);
+		float displacementVertical = this.detectCollisionVertical(movingTo);
+		if (displacementVertical != 0.0f) {
 			this.upVelocity = 0.0f;
 			this.isJumping = false;
-			this.origin.addTranslation(0, BASE_TERRAIN_HEIGHT - this.position.y, 0);
+			this.origin.addTranslation(0, displacementVertical, 0);
 		}
 		
 		/*
@@ -102,5 +123,41 @@ public class Player extends Character {
 				this.isJumping = true;
 			}
 		}
+	}
+	
+	private Point3D detectCollissionHorizontal(Point3D movingTo) {
+		Point3D pos;
+		Point3D displacement = new Point3D();
+		for (Platform platform : Board.getPlatforms()) {
+			pos = platform.getPosition();
+			if (this.withinPlatform(movingTo, pos)) {
+				if (this.position.y < pos.y + 2.1f) {
+					displacement.set(pos.x - movingTo.x, 0, pos.z - movingTo.z);
+					return displacement;
+				}
+			}
+		}
+		return displacement;
+	}
+	
+	private float detectCollisionVertical(Point3D movingTo) {
+		Point3D pos;
+		for (Platform platform : Board.getPlatforms()) {
+			pos = platform.getPosition();
+			if (this.withinPlatform(this.position, pos)) {
+				if (movingTo.y < pos.y + 2.1f) {
+					return (pos.y + 2.1f) - movingTo.y;
+				}
+			}
+		}
+		if (movingTo.y < BASE_TERRAIN_HEIGHT) {
+			return BASE_TERRAIN_HEIGHT - movingTo.y;
+		}
+		return 0.0f;
+	}
+	
+	private boolean withinPlatform(Point3D p, Point3D platformPos) {
+		return ((p.x < platformPos.x + 1 && p.x > platformPos.x - 1) &&
+				(p.z < platformPos.z + 1 && p.z > platformPos.z - 1));
 	}
 }

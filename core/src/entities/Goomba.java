@@ -14,6 +14,11 @@ public class Goomba extends Enemy {
 	private boolean yMotion;
 	private boolean up;
 	private Point3D originalPosition;
+	
+	private Vector3D P1;
+	private Vector3D P2;
+	private Vector3D P3;
+	private Vector3D P4;
 
 	public Goomba(
 			Shader shader, MeshModel model, Texture diffuseTexture, Texture specularTexture,
@@ -24,6 +29,21 @@ public class Goomba extends Enemy {
 		this.yMotion = yMotion;
 		this.up = true;
 		this.originalPosition = position;
+		
+		if(!this.yMotion)
+		{
+			this.P1 = new Vector3D(position.x, position.y, position.z);
+			this.P2 = new Vector3D(position.x, position.y, position.z + 5);
+			this.P3 = new Vector3D(this.P2.x, position.y, this.P2.z + 10);
+			this.P4 = new Vector3D(this.P3.x, position.y, this.P3.z - 10);
+		}
+		else
+		{
+			this.P1 = new Vector3D(position.x, position.y, position.z);
+			this.P2 = new Vector3D(position.x, position.y + 5, position.z);
+			this.P3 = new Vector3D(this.P2.x, position.y + 10, this.P2.z);
+			this.P4 = new Vector3D(this.P3.x, position.y - 5, this.P3.z);			
+		}
 	}
 	
 	public void display() {
@@ -66,5 +86,4 @@ public class Goomba extends Enemy {
 		}
 		this.origin.addTranslation(move.x, move.y, move.z);
 	}
-
 }

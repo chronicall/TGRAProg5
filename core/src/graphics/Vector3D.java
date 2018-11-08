@@ -60,4 +60,8 @@ public class Vector3D {
 	public boolean equals(Vector3D v) {
 		return this.x == v.x && this.y == v.y && this.z == v.z;
 	}
+	
+	public float distance(Vector3D p) {
+		return (float) (Math.pow(p.x - this.x, 2) + Math.pow(p.y - this.y, 2) + Math.pow(p.z - this.z, 2));
+	}
 }

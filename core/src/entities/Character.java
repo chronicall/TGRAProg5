@@ -40,7 +40,7 @@ public class Character {
 		this.origin = new ModelMatrix();
 		this.origin.loadIdentityMatrix();
 		this.origin.addTranslation(position.x, position.y, position.z);
-		this.origin.addScale(0.4f, 0.4f, 0.4f);
+		//this.origin.addScale(0.4f, 0.4f, 0.4f);
 	}
 	
 	public void display() {
