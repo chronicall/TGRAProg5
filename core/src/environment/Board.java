@@ -2,34 +2,45 @@ package environment;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.Gdx;
+
 import graphics.Colour;
 import graphics.ModelMatrix;
-import graphics.Point3D;
-import graphics.Vector3D;
 import graphics.shapes.g3djmodel.G3DJModelLoader;
 import graphics.shapes.g3djmodel.MeshMaterial;
 import graphics.shapes.g3djmodel.MeshModel;
 import graphics.terrain.Terrain;
 import shaders.Shader;
+import utils.Point3D;
+import utils.Vector3D;
 
 public class Board {
 	private static ArrayList<Platform> platforms;
+	private static ArrayList<Ring> rings;
+	private static float RING_SPIN_SPEED = 45.0f;
+	
+	private static MeshModel crate;
+	private static MeshModel ring;
 	
 	public static void create(Terrain terrain) {
 		Board.platforms = new ArrayList<Platform>();
+		Board.rings = new ArrayList<Ring>();
 		Board.generate(terrain);
 	}
 
 	private static void generate(Terrain terrain) {
-		MeshModel crate = G3DJModelLoader.loadG3DJFromFile("crate/crate.g3dj");
+		Board.crate = G3DJModelLoader.loadG3DJFromFile("crate/crate.g3dj");
 		for (MeshMaterial mat : crate.materials) {
 			mat.material.emission = new Colour(0,0,0,1);
 		}
-		Vector3D scale = new Vector3D(2.0f, 2.0f, 2.0f);
+		Board.ring = G3DJModelLoader.loadG3DJFromFile("ring/ring.g3dj");
 		
+		Vector3D scale = new Vector3D(2.0f, 2.0f, 2.0f);
 		// Platform needed to get onto the larger ones
 		Point3D position = new Point3D(198.0f, terrain.getTerrainHeight(198, 216) + 1, 216.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
+		
+		// TODO: Generate these randomly. Set up some pattern with loops.
 		
 		// Big stack 1
 		position = new Point3D(202.0f, terrain.getTerrainHeight(202, 220) + 1, 220.0f);
@@ -118,12 +129,25 @@ public class Board {
 		Board.platforms.add(new Platform(position, scale, crate));
 		position = new Point3D(222.0f, terrain.getTerrainHeight(222, 230) + 9, 230.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
-		
-		// TODO: Add something to "collect" on top of some of the boxes
+	}
+	
+	public static void spawnRings(Terrain terrain) {
+		Board.rings.clear();
+		Vector3D rotation = new Vector3D(0.0f, 35.0f, 0.0f);
+		Point3D position = new Point3D(222.0f, terrain.getTerrainHeight(222, 230) + 11, 230.0f);
+		Board.rings.add(new Ring(position, rotation, Board.ring));
+		position = new Point3D(218.0f, terrain.getTerrainHeight(218, 230) + 9, 230.0f);
+		Board.rings.add(new Ring(position, rotation, Board.ring));
+		position = new Point3D(210.0f, terrain.getTerrainHeight(210, 234) + 7, 234.0f);
+		Board.rings.add(new Ring(position, rotation, Board.ring));
+		position = new Point3D(202.0f, terrain.getTerrainHeight(202, 230) + 11, 230.0f);
+		Board.rings.add(new Ring(position, rotation, Board.ring));
+		position = new Point3D(202.0f, terrain.getTerrainHeight(202, 228) + 9, 228.0f);
+		Board.rings.add(new Ring(position, rotation, Board.ring));
 	}
 	
 	public static void draw(Shader shader) {
-		for (Platform platform : platforms) {
+		for (Platform platform : Board.platforms) {
 			Point3D pos = platform.getPosition();
 			Vector3D scale = platform.getScale();
 			ModelMatrix.main.pushMatrix();
@@ -133,9 +157,27 @@ public class Board {
 			platform.getModel().draw(shader);
 			ModelMatrix.main.popMatrix();
 		}
+		for (Ring ring : Board.rings) {
+			Point3D pos = ring.getPosition();
+			Vector3D rotation = ring.getRotation();
+			ModelMatrix.main.pushMatrix();
+			float deltaTime = Gdx.graphics.getDeltaTime();
+			ring.setRotation(new Vector3D(0.0f, rotation.y + (Board.RING_SPIN_SPEED * deltaTime), 0.0f));
+			ModelMatrix.main.addTranslation(pos.x, pos.y, pos.z);
+			ModelMatrix.main.addRoatationY(rotation.y);
+			shader.setModelMatrix(ModelMatrix.main.getMatrix());
+			ring.getModel().draw(shader);
+			ModelMatrix.main.popMatrix();
+		}
 	}
 
 	public static ArrayList<Platform> getPlatforms() {
-		return platforms;
+		return Board.platforms;
+	}
+	public static ArrayList<Ring> getRings() {
+		return Board.rings;
+	}
+	public static void claimRings(Ring ring) {
+		Board.rings.remove(ring);
 	}
 }

@@ -1,7 +1,6 @@
 package graphics.terrain;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -11,9 +10,6 @@ import com.badlogic.gdx.utils.BufferUtils;
 
 import graphics.Colour;
 import graphics.Material;
-import graphics.Point3D;
-import graphics.Quaternion;
-import graphics.Vector3D;
 import graphics.shapes.g3djmodel.Mesh;
 import graphics.shapes.g3djmodel.MeshMaterial;
 import graphics.shapes.g3djmodel.MeshModel;
@@ -22,7 +18,11 @@ import graphics.shapes.g3djmodel.MeshModelNodePart;
 import graphics.shapes.g3djmodel.MeshPart;
 import graphics.shapes.g3djmodel.MeshTexture;
 import shaders.Shader;
+import tgra.prog5.game.Prog5Game;
+import utils.Point3D;
+import utils.Quaternion;
 import utils.Utils;
+import utils.Vector3D;
 
 public class Terrain {
 	private static final float SIZE = 800;
@@ -57,14 +57,16 @@ public class Terrain {
 	}
 	
 	private void generateTerrain(String heightMap) {
+		// Read in the height map
 		BufferedImage image = null;
 		try {
-			image = ImageIO.read(new File(heightMap));
+			image = ImageIO.read(Prog5Game.class.getResource("/textures/heightMap.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		int vertexCount = image.getHeight();
 		
+		// Initialize the height map array
 		this.heightMap = new float[vertexCount][vertexCount];
 		
 		int count = vertexCount * vertexCount;
@@ -148,6 +150,7 @@ public class Terrain {
 		this.model.nodes.add(node);
 	}
 	
+	// Used with calculateNormal
 	private float getHeight(int x, int z, BufferedImage image) {
 		if (x < 0 || x >= image.getHeight() || z < 0 || z >= image.getHeight()) {
 			return 0;
@@ -161,6 +164,7 @@ public class Terrain {
 		return height;
 	}
 	
+	// A somewhat (very) inefficient way to calculate a normal vector
 	private Vector3D calculateNormal(int x, int z, BufferedImage image) {
 		float heightL = this.getHeight(x - 1, z, image);
 		float heightR = this.getHeight(x + 1, z, image);
@@ -173,6 +177,7 @@ public class Terrain {
 	}
 
 	public float getTerrainHeight(float worldX, float worldZ) {
+		// Setting up the variables for the barycentric calculation
 		float terrainX = worldX - this.x;
 		float terrainZ = worldZ - this.z;
 		float gridSquareSize = SIZE / ((float) this.heightMap.length - 1);
@@ -185,6 +190,7 @@ public class Terrain {
 		float zCoord = (terrainZ % gridSquareSize) / gridSquareSize;
 		
 		float quadTriangleHeight;
+		// Find the height values of the exact location inside the triangle.
 		if (xCoord <= 1 - zCoord) {
 			quadTriangleHeight = Utils.baryCentric(new Point3D(0, this.heightMap[gridX][gridZ], 0),
 												   new Point3D(1, this.heightMap[gridX + 1][gridZ], 0),

@@ -7,8 +7,8 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.utils.BufferUtils;
 
 import entities.Player;
-import graphics.Point3D;
-import graphics.Vector3D;
+import utils.Point3D;
+import utils.Vector3D;
 
 public class Camera {
 	// Eye position
@@ -76,15 +76,15 @@ public class Camera {
 			}
 		}
 		if (Gdx.input.isKeyPressed(Keys.Q)) {
-			if (this.distanceToPlayer < 7) {
-				this.distanceToPlayer += 3.0f * deltaTime;
+			if (this.distanceToPlayer < 35) {
+				this.distanceToPlayer += 15.0f * deltaTime;
 			} else {
-				this.distanceToPlayer = 7;
+				this.distanceToPlayer = 35;
 			}
 		}
 		if (Gdx.input.isKeyPressed(Keys.E)) {
 			if (this.distanceToPlayer > 1) {
-				this.distanceToPlayer -= 3.0f * deltaTime;
+				this.distanceToPlayer -= 15.0f * deltaTime;
 			} else {
 				this.distanceToPlayer = 1;
 			}
@@ -121,7 +121,6 @@ public class Camera {
 	public void setEye(Point3D position) {
 		this.eye.set(position.x, position.y, position.z);
 	}
-	
 	public float getPitch() {
 		return this.pitch;
 	}

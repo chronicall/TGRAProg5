@@ -1,8 +1,8 @@
 package environment;
 
-import graphics.Point3D;
-import graphics.Vector3D;
 import graphics.shapes.g3djmodel.MeshModel;
+import utils.Point3D;
+import utils.Vector3D;
 
 public class Platform {
 	private Point3D position;

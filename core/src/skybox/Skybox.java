@@ -4,9 +4,6 @@ import com.badlogic.gdx.utils.BufferUtils;
 
 import graphics.Colour;
 import graphics.Material;
-import graphics.Point3D;
-import graphics.Quaternion;
-import graphics.Vector3D;
 import graphics.shapes.g3djmodel.Mesh;
 import graphics.shapes.g3djmodel.MeshMaterial;
 import graphics.shapes.g3djmodel.MeshModel;
@@ -15,6 +12,9 @@ import graphics.shapes.g3djmodel.MeshModelNodePart;
 import graphics.shapes.g3djmodel.MeshPart;
 import shaders.Shader;
 import tgra.prog5.game.Camera;
+import utils.Point3D;
+import utils.Quaternion;
+import utils.Vector3D;
 
 public class Skybox {
 	private static final float SIZE = 500f;

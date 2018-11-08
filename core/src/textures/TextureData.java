@@ -2,8 +2,8 @@ package textures;
  
 import java.nio.ByteBuffer;
  
+// To be used with Skybox, but currently is not used.
 public class TextureData {
-     
     private int width;
     private int height;
     private ByteBuffer buffer;

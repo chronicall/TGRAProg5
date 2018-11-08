@@ -57,11 +57,6 @@ public class Shader {
 	private int lightColourLoc;
 	private int lightPositionLoc;
 	
-	private int sun1DirectionLoc;
-	private int sun1AmbientLoc;
-	private int sun1DiffuseLoc;
-	private int sun1SpecularLoc;
-	
 	public Shader(String vertexShader, String fragmentShader) {
 		String vertexShaderString;
 		String fragmentShaderString;
@@ -134,11 +129,6 @@ public class Shader {
 		
 		this.lightColourLoc				= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_lightColour");
 		this.lightPositionLoc			= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_lightPosition");
-		
-		this.sun1DirectionLoc			= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_sun1.direction");
-		this.sun1AmbientLoc				= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_sun1.ambient");
-		this.sun1DiffuseLoc				= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_sun1.diffuse");
-		this.sun1SpecularLoc			= Gdx.gl.glGetUniformLocation(this.renderingProgramID, "u_sun1.specular");
 		
 		Gdx.gl.glUseProgram(this.renderingProgramID);
 	}
@@ -282,18 +272,5 @@ public class Shader {
 	}
 	public void setLightPosition(float x, float y, float z, float w) {
 		Gdx.gl.glUniform4f(this.lightPositionLoc, x, y, z, w);
-	}
-	
-	public void setSun1Direction(float x, float y, float z, float w) {
-		Gdx.gl.glUniform4f(this.sun1DirectionLoc, x, y, z, w);
-	}
-	public void setSun1Ambient(float r, float g, float b, float a) {
-		Gdx.gl.glUniform4f(this.sun1AmbientLoc, r, g, b, a);
-	}
-	public void setSun1Diffuse(float r, float g, float b, float a) {
-		Gdx.gl.glUniform4f(this.sun1DiffuseLoc, r, g, b, a);
-	}
-	public void setSun1Specular(float r, float g, float b, float a) {
-		Gdx.gl.glUniform4f(this.sun1SpecularLoc, r, g, b, a);
 	}
 }

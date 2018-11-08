@@ -2,9 +2,9 @@ package graphics.shapes.g3djmodel;
 
 import java.util.Vector;
 
-import graphics.Point3D;
-import graphics.Quaternion;
-import graphics.Vector3D;
+import utils.Point3D;
+import utils.Quaternion;
+import utils.Vector3D;
 
 public class MeshModelNode {
 	public String id;

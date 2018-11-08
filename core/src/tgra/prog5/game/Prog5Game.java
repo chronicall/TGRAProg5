@@ -1,11 +1,11 @@
 package tgra.prog5.game;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
@@ -16,18 +16,19 @@ import entities.Goomba;
 import entities.Player;
 import environment.Board;
 import environment.Platform;
+import environment.Ring;
 import graphics.Material;
 import graphics.ModelMatrix;
-import graphics.Point3D;
-import graphics.Vector3D;
 import graphics.shapes.g3djmodel.G3DJModelLoader;
 import graphics.shapes.g3djmodel.MeshModel;
 import graphics.shapes.g3djmodel.MeshModelNode;
 import graphics.terrain.Terrain;
 import graphics.terrain.TerrainTexturePack;
 import shaders.Shader;
-import skybox.Skybox;
+import utils.Point3D;
+//import skybox.Skybox;
 import utils.Utils;
+import utils.Vector3D;
 
 public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 	private Shader shader;
@@ -48,12 +49,19 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 	
 	private ChainChomp chainChomp;
 	private MeshModel chainChompModel;
-	
-	private Terrain terrain1;
-	
-	private List<MeshModel> trees;
 
-	private Skybox skybox;
+	private ArrayList<Point3D> enemyPositions;
+	
+	private Terrain terrain;
+	
+	private ArrayList<MeshModel> trees;
+
+	//private Skybox skybox;
+	
+	private int score;
+	private float respawnTimer;
+	private boolean enableRespawnTimer;
+	private ArrayList<Ring> scoredRings;
 	
 	@Override
 	public void create () {
@@ -64,16 +72,11 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		Gdx.gl.glCullFace(GL20.GL_BACK);
 		Gdx.input.setInputProcessor(this);
 		
+		this.score = 0;
+		
 		this.shader = new Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag");
 		this.shader.setTextureTilingValue(1.0f);
-		this.shader.setFogDensity(0.005f);
-		this.shader.setFogGradient(1.0f);
 		
-		ModelMatrix.main = new ModelMatrix();
-		ModelMatrix.main.loadIdentityMatrix();
-		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-
-		this.fov = 90.0f;
 		this.random = new Random();
 		
 		this.playerModel = G3DJModelLoader.loadG3DJFromFile("bowsette/Bowsette.g3dj");
@@ -88,8 +91,27 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		);
 		Texture blendMap = new Texture(Gdx.files.internal("textures/blendMap.png"));
 		
-		this.terrain1 = new Terrain(0, 0, terrainTextures, blendMap, "assets/textures/heightMap.png");
-		Board.create(this.terrain1);
+		this.terrain = new Terrain(0, 0, terrainTextures, blendMap, "../core/assets/textures/heightMap.png");
+		Board.create(this.terrain);
+		
+		this.setup();
+		// Failed skybox..
+		//this.skybox = new Skybox(this.camera);
+	}
+	
+	public void setup() {
+		Board.spawnRings(this.terrain);
+		this.shader.setFogDensity(this.random.nextFloat() * 0.05f + 0.03f);
+		this.shader.setFogGradient(this.random.nextFloat() * 3.0f + 2.0f);
+		
+		ModelMatrix.main = new ModelMatrix();
+		ModelMatrix.main.loadIdentityMatrix();
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+
+		this.scoredRings = new ArrayList<Ring>();
+		this.respawnTimer = 3.0f;
+		this.enableRespawnTimer = false;
+		this.fov = 90.0f;
 		
 		// Set up the player
 		Point3D playerPos = new Point3D(198.0f, 5.0f, 194.0f);
@@ -100,21 +122,24 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		);
 		
 		// Set up the enemies
-		Point3D goomba1Pos = new Point3D(215.0f, this.terrain1.getTerrainHeight(215, 220), 220.0f);
+		this.enemyPositions = new ArrayList<Point3D>();
+		Point3D goomba1Pos = new Point3D(215.0f, this.terrain.getTerrainHeight(215, 220), 220.0f);
 		this.goomba1 = new Goomba(
 				this.shader, this.goombaModel, null, null, null, goomba1Pos
 		);
-		
-		Point3D goomba2Pos = new Point3D(220.0f, this.terrain1.getTerrainHeight(220, 210), 210.0f);
+		this.enemyPositions.add(this.goomba1.position);
+		Point3D goomba2Pos = new Point3D(220.0f, this.terrain.getTerrainHeight(220, 210), 210.0f);
 		this.goomba2 = new Goomba(
 				this.shader, this.goombaModel, null, null, null, goomba2Pos
 		);
+		this.enemyPositions.add(this.goomba2.position);
 		
-		Point3D chainChompPos = new Point3D(210.0f, this.terrain1.getTerrainHeight(210, 210), 210.0f);
+		Point3D chainChompPos = new Point3D(210.0f, this.terrain.getTerrainHeight(210, 210), 210.0f);
 		this.chainChomp = new ChainChomp(
 				this.shader, this.chainChompModel, null, null, 
 				null, chainChompPos
 		);
+		this.enemyPositions.add(this.chainChomp.position);
 		
 		// Set up the camera
 		this.eye = new Point3D(playerPos.x - 2, playerPos.y + 3.0f, playerPos.z - 2);
@@ -135,8 +160,8 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 			tree = G3DJModelLoader.loadG3DJFromFile("tree/tree.g3dj");
 			float x = 0, z = 0;
 			while (true) {
-				x = this.random.nextFloat() * (-400 - 800) + 800;
-				z = this.random.nextFloat() * (-600 - 600) + 600;
+				x = this.random.nextFloat() * 400;
+				z = this.random.nextFloat() * 400;
 				if (Utils.isInside(this.player.position, new Point3D(x, 0, z)) ||
 					Utils.isInside(this.goomba1.position, new Point3D(x, 0, z)) ||
 					Utils.isInside(this.goomba2.position, new Point3D(x, 0, z)) ||
@@ -144,25 +169,29 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 				) {
 					continue;
 				}
-				boolean inPlatform = false;
+				boolean occupiedSpace = false;
 				for (Platform platform : Board.getPlatforms()) {
 					if (Utils.isInside(new Point3D(x, 0, z), platform.getPosition())) {
-						inPlatform = true;
+						occupiedSpace = true;
 						break;
 					}
 				}
-				if (!inPlatform) {
+				for (MeshModel treeSpawned : this.trees) {
+					if (Utils.isInside(new Point3D(x, 0, z), treeSpawned.nodes.get(0).translation)) {
+						occupiedSpace = true;
+						break;
+					}
+				}
+				if (!occupiedSpace) {
 					break;
 				}
 			}
-			float y = this.terrain1.getTerrainHeight(x, z);
+			float y = this.terrain.getTerrainHeight(x, z);
 			for (MeshModelNode node : tree.nodes) {
 				node.translation = node.translation.add(new Vector3D(x, y, z));
 			}
 			this.trees.add(tree);
 		}
-		
-		//this.skybox = new Skybox(this.camera);
 	}
 
 	private void update() {
@@ -171,15 +200,61 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
 			Gdx.app.exit();
 		}
+		if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+			this.setup();
+		}
+		if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
+			if (Gdx.graphics.isFullscreen()) {
+				Gdx.graphics.setWindowedMode(1280, 720);
+			} else {
+				Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+			}
+		}
+		if (this.enableRespawnTimer) {
+			this.respawnTimer -= 3.0f * deltaTime;
+			if (this.respawnTimer <= 0.0f) {
+				this.setup();
+			}
+			return;
+		}
+		if (this.player.getIsDead()) {
+			this.score--;
+			System.out.println("Ohnoes! You died! Current score: " + this.score);
+			this.enableRespawnTimer = true;
+			return;
+		}
+		if (Board.getRings().size() == 0) {
+			System.out.println("WHOO! You found all the rings! Isn't this fun? Let's go again!\nCurrent score: " + this.score);
+			this.enableRespawnTimer = true;
+			return;
+		}
+		this.scoredRings.clear();
+		for (Ring ring : Board.getRings()) {
+			if (Utils.isInside(this.player.position, ring.getPosition())) {
+				if (this.player.position.y <= ring.getPosition().y) {
+					this.score++;
+					System.out.println("Hey you found a ring! Is this the right game..?");
+					this.scoredRings.add(ring);
+					break;
+				}
+			}
+		}
+		for (Ring ring : this.scoredRings) {
+			Board.claimRings(ring);
+		}
 		
 		// Update camera and entities
 		this.camera.update(deltaTime);
-		this.player.update(deltaTime, this.terrain1);
+		this.player.update(deltaTime, this.terrain, this.enemyPositions);
 		this.camera.look(this.camera.eye, this.player.position, this.up);
 		
-		this.goomba1.update(deltaTime, this.terrain1);
-		this.goomba2.update(deltaTime, this.terrain1);
-		this.chainChomp.update(deltaTime, this.terrain1);
+		this.enemyPositions.clear();
+		this.goomba1.update(deltaTime, this.terrain);
+		this.enemyPositions.add(this.goomba1.position);
+		this.goomba2.update(deltaTime, this.terrain);
+		this.enemyPositions.add(this.goomba2.position);
+		this.chainChomp.update(deltaTime, this.terrain);
+		this.enemyPositions.add(this.chainChomp.position);
 	}
 	
 	private void display() {
@@ -195,7 +270,7 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		ModelMatrix.main.loadIdentityMatrix();
 
 		// Draw all the terrain and entities
-		this.terrain1.display(this.shader);
+		this.terrain.display(this.shader);
 		for (MeshModel tree : trees) {
 			tree.draw(this.shader);
 		}

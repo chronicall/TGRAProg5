@@ -4,9 +4,9 @@ import com.badlogic.gdx.graphics.Texture;
 
 import graphics.Material;
 import graphics.ModelMatrix;
-import graphics.Point3D;
 import graphics.shapes.g3djmodel.MeshModel;
 import shaders.Shader;
+import utils.Point3D;
 
 public class Character {
 	public ModelMatrix origin;
@@ -40,7 +40,6 @@ public class Character {
 		this.origin = new ModelMatrix();
 		this.origin.loadIdentityMatrix();
 		this.origin.addTranslation(position.x, position.y, position.z);
-		//this.origin.addScale(0.4f, 0.4f, 0.4f);
 	}
 	
 	public void display() {

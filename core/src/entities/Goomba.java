@@ -6,14 +6,14 @@ import com.badlogic.gdx.graphics.Texture;
 
 import graphics.Material;
 import graphics.ModelMatrix;
-import graphics.Point3D;
-import graphics.Vector3D;
 import graphics.shapes.SphereGraphic;
 import graphics.shapes.g3djmodel.MeshModel;
 import graphics.terrain.Terrain;
 import shaders.Shader;
+import utils.Point3D;
+import utils.Vector3D;
 
-public class Goomba extends Enemy {
+public class Goomba extends Character {
 	private Random random;
 	private Vector3D direction;
 	private float DIRECTION_CHANGE_TIMER = 5.0f;

@@ -5,7 +5,6 @@ import java.nio.ByteBuffer;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
-import graphics.Point3D;
 import textures.TextureData;
 
 public class Utils {

@@ -1,5 +1,8 @@
 package graphics;
 
+import utils.Point3D;
+import utils.Vector3D;
+
 public class ModelMatrix extends Matrix {
 
 	public static ModelMatrix main;

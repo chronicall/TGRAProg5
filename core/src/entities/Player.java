@@ -1,21 +1,25 @@
 package entities;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
 
 import environment.Board;
 import environment.Platform;
+import graphics.Colour;
 import graphics.Material;
 import graphics.ModelMatrix;
-import graphics.Point3D;
-import graphics.Vector3D;
 import graphics.shapes.BoxGraphic;
 import graphics.shapes.SphereGraphic;
+import graphics.shapes.g3djmodel.MeshMaterial;
 import graphics.shapes.g3djmodel.MeshModel;
 import graphics.terrain.Terrain;
 import shaders.Shader;
+import utils.Point3D;
 import utils.Utils;
+import utils.Vector3D;
 
 public class Player extends Character {
 	private static final float RUN_SPEED = 10;
@@ -25,6 +29,7 @@ public class Player extends Character {
 	
 	private float upVelocity;
 	private boolean isJumping;
+	private boolean isDead;
 	
 	public Player(
 			Shader shader, MeshModel model, Texture diffuseTexture, Texture specularTexture, 
@@ -33,6 +38,7 @@ public class Player extends Character {
 		super(shader, model, diffuseTexture, specularTexture, material, position);
 		this.upVelocity = 0.0f;
 		this.isJumping = false;
+		this.isDead = false;
 	}
 	
 	public void display() {
@@ -50,15 +56,25 @@ public class Player extends Character {
 		ModelMatrix.main.popMatrix();
 	}
 	
-	public void update(float deltaTime, Terrain terrain) {
+	public void update(float deltaTime, Terrain terrain, ArrayList<Point3D> enemies) {
 		super.update(deltaTime);
 		// XXX: Quick and dirty way to offset the y position of the current model being used..
 		this.position.set(this.position.x, this.position.y + 1, this.position.z);
+		if (this.isDead) {
+			for (MeshMaterial material : this.model.materials) {
+				material.material.emission = new Colour(0.0f, 1.0f, 0.0f, 1.0f);
+				return;
+			}
+		}
+		for (Point3D pos : enemies) {
+			if (Utils.isInside(this.position, pos)) {
+				if (this.position.y <= pos.y) {
+					this.isDead = true;
+				}
+			}
+		}
 		
-		// Keeping the position updated makes for less calls to get the origin point
-		//this.position = this.origin.getOrigin();
 		float playAngle = TURN_SPEED * deltaTime;
-		
 		// Update the angle the player is rotated by
 		if (Gdx.input.isKeyPressed(Keys.LEFT)) {
 			this.origin.addRoatationY(-playAngle);
@@ -111,7 +127,6 @@ public class Player extends Character {
 			this.isJumping = false;
 			this.origin.addTranslation(0, displacementVertical, 0);
 		}
-		
 		/*
 		 * TODO: Add variable jump, the jump height depends on how long the spacebar
 		 * 		 is held pressed.
@@ -154,5 +169,9 @@ public class Player extends Character {
 			return terrainHeight - movingTo.y + 1;
 		}
 		return 0.0f;
+	}
+	
+	public boolean getIsDead() {
+		return this.isDead;
 	}
 }
