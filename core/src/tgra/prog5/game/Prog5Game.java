@@ -20,8 +20,6 @@ import graphics.Material;
 import graphics.ModelMatrix;
 import graphics.Point3D;
 import graphics.Vector3D;
-import graphics.shapes.BoxGraphic;
-import graphics.shapes.SphereGraphic;
 import graphics.shapes.g3djmodel.G3DJModelLoader;
 import graphics.shapes.g3djmodel.MeshModel;
 import graphics.shapes.g3djmodel.MeshModelNode;
@@ -51,7 +49,6 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 	private MeshModel chainChompModel;
 	
 	private Terrain terrain1;
-	private Terrain terrain2;
 	
 	private List<MeshModel> trees;
 
@@ -72,10 +69,6 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		ModelMatrix.main = new ModelMatrix();
 		ModelMatrix.main.loadIdentityMatrix();
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		
-		Board.create();
-		BoxGraphic.create();
-		SphereGraphic.create();
 
 		this.fov = 90.0f;
 		this.random = new Random();
@@ -84,8 +77,19 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		this.goombaModel = G3DJModelLoader.loadG3DJFromFile("goomba/goomba.g3dj");
 		this.chainChompModel = G3DJModelLoader.loadG3DJFromFile("chainChomp/chomp.g3dj");
 		
+		TerrainTexturePack terrainTextures = new TerrainTexturePack(
+				new Texture(Gdx.files.internal("textures/grass2.png")),
+				new Texture(Gdx.files.internal("textures/dirt.png")),
+				new Texture(Gdx.files.internal("textures/grassFlowers.png")),
+				new Texture(Gdx.files.internal("textures/path.png"))
+		);
+		Texture blendMap = new Texture(Gdx.files.internal("textures/blendMap.png"));
+		
+		this.terrain1 = new Terrain(0, 0, terrainTextures, blendMap, "assets/textures/heightMap.png");
+		Board.create(this.terrain1);
+		
 		// Set up the player
-		Point3D playerPos = new Point3D(198.0f, 0.0f, 194.0f);
+		Point3D playerPos = new Point3D(198.0f, 5.0f, 194.0f);
 		Material playerMaterial = new Material();
 		this.player = new Player(
 				this.shader, this.playerModel, this.playerTexture, null,
@@ -93,24 +97,20 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		);
 		
 		// Set up the enemies
-		Point3D goomba1Pos = new Point3D(215.0f, 0.0f, 220.0f);
-		Material goombaMaterial = new Material();
+		Point3D goomba1Pos = new Point3D(215.0f, this.terrain1.getTerrainHeight(215, 220), 220.0f);
 		this.goomba1 = new Goomba(
-				this.shader, this.goombaModel, null, null,
-				goombaMaterial, goomba1Pos, false
+				this.shader, this.goombaModel, null, null, null, goomba1Pos
 		);
 		
-		Point3D goomba2Pos = new Point3D(220.0f, 1.5f, 210.0f);
+		Point3D goomba2Pos = new Point3D(220.0f, this.terrain1.getTerrainHeight(220, 210), 210.0f);
 		this.goomba2 = new Goomba(
-				this.shader, this.goombaModel, null, null, 
-				goombaMaterial, goomba2Pos, true
+				this.shader, this.goombaModel, null, null, null, goomba2Pos
 		);
 		
-		Point3D chainChompPos = new Point3D(210.0f, 2.0f, 210.0f);
-		Material chainChompMaterial = new Material();
+		Point3D chainChompPos = new Point3D(210.0f, this.terrain1.getTerrainHeight(210, 210), 210.0f);
 		this.chainChomp = new ChainChomp(
 				this.shader, this.chainChompModel, null, null, 
-				chainChompMaterial, chainChompPos
+				null, chainChompPos
 		);
 		
 		// Set up the camera
@@ -125,16 +125,6 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		// No global ambient lighting. May change.
 		this.shader.setGlobalAmbient(0, 0, 0, 1);
 		
-		TerrainTexturePack terrainTextures = new TerrainTexturePack(
-				new Texture(Gdx.files.internal("textures/grass2.png")),
-				new Texture(Gdx.files.internal("textures/dirt.png")),
-				new Texture(Gdx.files.internal("textures/grassFlowers.png")),
-				new Texture(Gdx.files.internal("textures/path.png"))
-		);
-		Texture blendMap = new Texture(Gdx.files.internal("textures/blendMap.png"));
-		
-		this.terrain1 = new Terrain(0, 0, terrainTextures, blendMap);
-		this.terrain2 = new Terrain(1, 0, terrainTextures, blendMap);
 		this.trees = new ArrayList<MeshModel>();
 		
 		MeshModel tree;
@@ -142,8 +132,8 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 			tree = G3DJModelLoader.loadG3DJFromFile("tree/tree.g3dj");
 			float x = 0, z = 0;
 			while (true) {
-				x = this.random.nextFloat() * 800 - 400;
-				z = this.random.nextFloat() * 600;
+				x = this.random.nextFloat() * (-400 - 800) + 800;
+				z = this.random.nextFloat() * (-600 - 600) + 600;
 				if (Maths.isInside(this.player.position, new Point3D(x, 0, z)) ||
 					Maths.isInside(this.goomba1.position, new Point3D(x, 0, z)) ||
 					Maths.isInside(this.goomba2.position, new Point3D(x, 0, z)) ||
@@ -162,8 +152,9 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 					break;
 				}
 			}
+			float y = this.terrain1.getTerrainHeight(x, z);
 			for (MeshModelNode node : tree.nodes) {
-				node.translation = node.translation.add(new Vector3D(x, 0, z));
+				node.translation = node.translation.add(new Vector3D(x, y, z));
 			}
 			this.trees.add(tree);
 		}
@@ -178,12 +169,12 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		
 		// Update camera and entities
 		this.camera.update(deltaTime);
-		this.player.update(deltaTime);
+		this.player.update(deltaTime, this.terrain1);
 		this.camera.look(this.camera.eye, this.player.position, this.up);
 		
-		this.goomba1.update(deltaTime);
-		this.goomba2.update(deltaTime);
-		this.chainChomp.update(deltaTime);
+		this.goomba1.update(deltaTime, this.terrain1);
+		this.goomba2.update(deltaTime, this.terrain1);
+		this.chainChomp.update(deltaTime, this.terrain1);
 	}
 	
 	private void display() {
@@ -200,13 +191,12 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 
 		// Draw all the terrain and entities
 		this.terrain1.display(this.shader);
-		this.terrain2.display(this.shader);
 		for (MeshModel tree : trees) {
 			tree.draw(this.shader);
 		}
 		Board.draw(this.shader);
 		
-		// Need to disable culling back faces or parts are missing from the crown.
+		// Need to temporarily disable culling back faces or parts are missing from the crown.
 		Gdx.gl.glDisable(GL20.GL_CULL_FACE);
 		this.player.display();
 		Gdx.gl.glEnable(GL20.GL_CULL_FACE);

@@ -13,6 +13,7 @@ import graphics.Vector3D;
 import graphics.shapes.BoxGraphic;
 import graphics.shapes.SphereGraphic;
 import graphics.shapes.g3djmodel.MeshModel;
+import graphics.terrain.Terrain;
 import shaders.Shader;
 import utils.Maths;
 
@@ -21,8 +22,6 @@ public class Player extends Character {
 	private static final float TURN_SPEED = 120;
 	private static final float JUMP_POWER = 15;
 	private static final float GRAVITY = -30;
-	
-	private static final float BASE_TERRAIN_HEIGHT = 1;
 	
 	private float upVelocity;
 	private boolean isJumping;
@@ -51,7 +50,7 @@ public class Player extends Character {
 		ModelMatrix.main.popMatrix();
 	}
 	
-	public void update(float deltaTime) {
+	public void update(float deltaTime, Terrain terrain) {
 		super.update(deltaTime);
 		// XXX: Quick and dirty way to offset the y position of the current model being used..
 		this.position.set(this.position.x, this.position.y + 1, this.position.z);
@@ -106,8 +105,7 @@ public class Player extends Character {
 		this.origin.addTranslation(0, this.upVelocity * deltaTime, 0);
 		// Check if falling through the terrain.
 		// If so, reset upward velocity and allow jumping again.
-		//Point3D movingTo = new Point3D(0, this.position.y + this.upVelocity * deltaTime, 0);
-		float displacementVertical = this.detectCollisionVertical(this.position);
+		float displacementVertical = this.detectCollisionVertical(this.position, terrain);
 		if (displacementVertical != 0.0f) {
 			this.upVelocity = 0.0f;
 			this.isJumping = false;
@@ -141,7 +139,8 @@ public class Player extends Character {
 		return displacement;
 	}
 	
-	private float detectCollisionVertical(Point3D movingTo) {
+	private float detectCollisionVertical(Point3D movingTo, Terrain terrain) {
+		float terrainHeight = terrain.getTerrainHeight(this.position.x, this.position.z);
 		Point3D pos;
 		for (Platform platform : Board.getPlatforms()) {
 			pos = platform.getPosition();
@@ -151,8 +150,8 @@ public class Player extends Character {
 				}
 			}
 		}
-		if (movingTo.y < BASE_TERRAIN_HEIGHT) {
-			return BASE_TERRAIN_HEIGHT - movingTo.y;
+		if (movingTo.y < terrainHeight + 1) {
+			return terrainHeight - movingTo.y + 1;
 		}
 		return 0.0f;
 	}

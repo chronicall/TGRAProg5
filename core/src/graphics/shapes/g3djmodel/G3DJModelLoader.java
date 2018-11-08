@@ -8,7 +8,7 @@ import com.cedarsoftware.util.io.JsonReader;
 
 import graphics.Material;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unused"})
 public class G3DJModelLoader {
 	public static MeshModel loadG3DJFromFile(String fileName)
 	{
@@ -308,7 +308,7 @@ public class G3DJModelLoader {
 		}
 		return floatArray;
 	}
-
+	
 	private static int getInt(Object jsonObject, String key)
 	{
 		if(((JsonObject)jsonObject).get(key) == null) return 0;

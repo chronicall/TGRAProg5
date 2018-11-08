@@ -10,24 +10,22 @@ import graphics.Point3D;
 import graphics.Vector3D;
 import graphics.shapes.SphereGraphic;
 import graphics.shapes.g3djmodel.MeshModel;
+import graphics.terrain.Terrain;
 import shaders.Shader;
 
 public class ChainChomp extends Enemy{
-	private Point3D chainPosition;
-	private int chainLength;
 	private Vector3D direction;
 	private Random random;
+	private float DIRECTION_CHANGE_TIMER = 5.0f;
+	private static final float GRAVITY = -30;
 
 	public ChainChomp(
 			Shader shader, MeshModel model, Texture diffuseTexture, Texture specularTexture,
 			Material material, Point3D position
 	) {
 		super(shader, model, diffuseTexture, specularTexture, material, position);
-		
-		this.chainPosition = position;
-		this.chainLength = 10;
-		this.direction = new Vector3D(3, 0, 3);
 		this.random = new Random();
+		this.direction = new Vector3D((random.nextFloat() * (-4 - 4) + 4), 0.0f, (random.nextFloat() * (-4 - 4) + 4));
 	}
 
 	public void display() {
@@ -43,17 +41,20 @@ public class ChainChomp extends Enemy{
 		ModelMatrix.main.popMatrix();
 	}
 	
-	public void update(float deltaTime) {
+	public void update(float deltaTime, Terrain terrain) {
 		super.update(deltaTime);
 		
-		if (this.position.equals(this.chainPosition) || (float) (
-				Math.pow(this.position.x - this.chainPosition.x, 2) + Math.pow(this.position.z - this.chainPosition.z, 2)
-			) > this.chainLength
-		) {
-			this.direction = this.direction.scale(-1);
-			this.direction = this.direction.add(new Vector3D(this.random.nextFloat() * (-1 - 1) + 1, 0, this.random.nextFloat() * (-1 - 1) + 1));
+		this.DIRECTION_CHANGE_TIMER -= 5.0f * deltaTime;
+		if (this.DIRECTION_CHANGE_TIMER <= 0) {
+			this.DIRECTION_CHANGE_TIMER = 5.0f;
+			this.direction.set((random.nextFloat() * (-4 - 4) + 4), 0.0f, (random.nextFloat() * (-4 - 4) + 4));
 		}
-
-		this.origin.addTranslation(this.direction.x * deltaTime, this.direction.y, this.direction.z * deltaTime);
+		this.origin.addTranslation(this.direction.x * deltaTime, 0.0f, this.direction.z * deltaTime);
+		this.origin.addTranslation(0, GRAVITY * deltaTime * deltaTime, 0);
+		
+		float terrainHeight = terrain.getTerrainHeight(this.position.x, this.position.z);
+		if (this.position.y < terrainHeight + 2.0f) {
+			this.origin.addTranslation(0, terrainHeight - this.position.y + 2.0f, 0);
+		}
 	}
 }

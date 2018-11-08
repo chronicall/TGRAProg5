@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Texture;
 
 import graphics.Material;
 import graphics.Point3D;
-import graphics.Vector3D;
 import graphics.shapes.g3djmodel.MeshModel;
 import shaders.Shader;
 

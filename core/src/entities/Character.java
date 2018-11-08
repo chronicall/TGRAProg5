@@ -46,7 +46,11 @@ public class Character {
 	public void display() {
 		// Character wide display setup
 		// Material colours and shine values
-		this.shader.setMaterial(this.material);
+		if (this.material == null) {
+			this.shader.setMaterial(new Material());
+		} else {
+			this.shader.setMaterial(this.material);
+		}
 	}
 	
 	public void update(float deltaTime) {

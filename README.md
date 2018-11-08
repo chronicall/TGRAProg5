@@ -16,13 +16,13 @@ Controls go here.
 - [ ] Board objects
   - [ ] Obstacles
   - [x] Platforms
-- [ ] Floor
+- [x] Floor
   - [ ] ~Some random shape/s~
   - [x] Static board
     - [x] Texture terrain
     - [x] Trees at random
     - [x] Blend map and a few textures for less static look
-    - [ ] Height map for varied height
+    - [x] Height map for varied height
   - [ ] ~Randomly generated board~
   - [ ] ~Board generator/collector (Optional)~
     - [ ] ~Store a few pre-generated boards~
