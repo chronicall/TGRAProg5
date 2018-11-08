@@ -17,6 +17,12 @@ public class Vector3D {
 		this.z = z;
 	}
 	
+	public Vector3D(Vector3D v) {
+		this.x = v.x;
+		this.y = v.y;
+		this.z = v.z;
+	}
+	
 	public Vector3D add(Vector3D v) {
 		return new Vector3D(this.x + v.x, this.y + v.y, this.z + v.z);
 	}

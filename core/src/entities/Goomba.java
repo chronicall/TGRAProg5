@@ -4,20 +4,23 @@ import java.util.Random;
 
 import com.badlogic.gdx.graphics.Texture;
 
+import environment.terrain.Terrain;
 import graphics.Material;
 import graphics.ModelMatrix;
-import graphics.shapes.SphereGraphic;
+import graphics.Shader;
 import graphics.shapes.g3djmodel.MeshModel;
-import graphics.terrain.Terrain;
-import shaders.Shader;
+import utils.BezierMotion;
 import utils.Point3D;
-import utils.Vector3D;
 
 public class Goomba extends Character {
 	private Random random;
-	private Vector3D direction;
-	private float DIRECTION_CHANGE_TIMER = 5.0f;
-	private static final float GRAVITY = -30;
+	
+	private BezierMotion motion;
+	private float currentTime;
+	private float startTime = 1.0f;
+	private float endTime = 12.0f;
+	private boolean firstFrame = true;
+	private Point3D currPoint;
 	
 	public Goomba(
 			Shader shader, MeshModel model, Texture diffuseTexture, Texture specularTexture,
@@ -25,7 +28,13 @@ public class Goomba extends Character {
 	) {
 		super(shader, model, diffuseTexture, specularTexture, material, position);
 		this.random = new Random();
-		this.direction = new Vector3D((random.nextFloat() * (-4 - 4) + 4), 0.0f, (random.nextFloat() * (-4 - 4) + 4));
+		
+		float randomPoint = (random.nextFloat() * 15) ;
+		this.motion = new BezierMotion(position, new Point3D(position.x, position.y, position.z + randomPoint), 
+				new Point3D(position.x + randomPoint*2, position.y, position.z + randomPoint), 
+				position,
+				startTime, endTime);
+		this.currPoint = new Point3D();
 	}
 	
 	public void display() {
@@ -34,26 +43,31 @@ public class Goomba extends Character {
 		ModelMatrix.main.addTransformation(this.origin.matrix);
 		ModelMatrix.main.addRoatationY(180);
 		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		if (this.model == null) {
-			SphereGraphic.drawSolidSphere(this.shader, this.diffuseTexture, this.specularTexture);
-		} else {
-			this.model.draw(this.shader);
-		}
+		this.model.draw(this.shader);
 		ModelMatrix.main.popMatrix();
 	}
 	
 	public void update(float deltaTime, Terrain terrain) {
 		super.update(deltaTime);
-		this.DIRECTION_CHANGE_TIMER -= 5.0f * deltaTime;
-		if (this.DIRECTION_CHANGE_TIMER <= 0) {
-			this.DIRECTION_CHANGE_TIMER = 5.0f;
-			this.direction.set((random.nextFloat() * (-4 - 4) + 4), 0.0f, (random.nextFloat() * (-4 - 4) + 4));
+		
+		if(firstFrame) {
+			currentTime = 0.0f;
+			firstFrame = false;
 		}
-		this.origin.addTranslation(this.direction.x * deltaTime, 0.0f, this.direction.z * deltaTime);
-		this.origin.addTranslation(0, GRAVITY * deltaTime * deltaTime, 0);
-		float terrainHeight = terrain.getTerrainHeight(this.position.x, this.position.z);
-		if (this.position.y < terrainHeight + 2f) {
-			this.origin.addTranslation(0, terrainHeight - this.position.y - 0.1f, 0);
+		else {
+			currentTime += deltaTime;
 		}
+		
+		if(currentTime < startTime) {
+			this.origin.addTranslation(0.0f, 0.0f, 0.0f);
+			return;
+		}
+		else if (currentTime > endTime) {
+			currentTime = startTime;
+		}
+		
+		motion.getCurrentPosition(currentTime, currPoint);		
+		Point3D movingTo = currPoint.subtract(this.origin.getOrigin());		
+		this.origin.addTranslation(movingTo.x, movingTo.y, movingTo.z);
 	}
 }

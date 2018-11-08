@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.Texture;
 
 import graphics.Material;
 import graphics.ModelMatrix;
+import graphics.Shader;
 import graphics.shapes.g3djmodel.MeshModel;
-import shaders.Shader;
 import utils.Point3D;
 
 public class Character {

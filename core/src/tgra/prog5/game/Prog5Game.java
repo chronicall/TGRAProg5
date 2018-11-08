@@ -5,26 +5,28 @@ import java.util.Random;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 
+import entities.Camera;
 import entities.ChainChomp;
 import entities.Goomba;
 import entities.Player;
 import environment.Board;
 import environment.Platform;
 import environment.Ring;
+import environment.terrain.Terrain;
+import environment.terrain.TerrainTexturePack;
+import graphics.Colour;
 import graphics.Material;
 import graphics.ModelMatrix;
+import graphics.Shader;
+import graphics.SpotLight;
 import graphics.shapes.g3djmodel.G3DJModelLoader;
 import graphics.shapes.g3djmodel.MeshModel;
 import graphics.shapes.g3djmodel.MeshModelNode;
-import graphics.terrain.Terrain;
-import graphics.terrain.TerrainTexturePack;
-import shaders.Shader;
 import utils.Point3D;
 //import skybox.Skybox;
 import utils.Utils;
@@ -63,6 +65,8 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 	private boolean enableRespawnTimer;
 	private ArrayList<Ring> scoredRings;
 	
+	private ArrayList<SpotLight> ringLights;
+	
 	@Override
 	public void create () {
 		Gdx.gl.glClearColor(0.3f, 0.7f, 1.0f, 1.0f);
@@ -84,7 +88,7 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		this.chainChompModel = G3DJModelLoader.loadG3DJFromFile("chainChomp/chomp.g3dj");
 		
 		TerrainTexturePack terrainTextures = new TerrainTexturePack(
-				new Texture(Gdx.files.internal("textures/grass2.png")),
+				new Texture(Gdx.files.internal("textures/grass.png")),
 				new Texture(Gdx.files.internal("textures/dirt.png")),
 				new Texture(Gdx.files.internal("textures/grassFlowers.png")),
 				new Texture(Gdx.files.internal("textures/path.png"))
@@ -95,14 +99,23 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		Board.create(this.terrain);
 		
 		this.setup();
+		
+		// Set up the light, a single white light as a "sun"
+		this.shader.setLightPosition(210, 215, 210, 1);
+		this.shader.setLightColour(0.1f, 0.1f, 0.1f, 1);
+		// No global ambient lighting. May change.
+		this.shader.setGlobalAmbient(0, 0, 0, 1);
+		this.shader.setShineDamper(0.0000001f);
+		this.shader.setReflectivity(0.095f);
+		
 		// Failed skybox..
 		//this.skybox = new Skybox(this.camera);
 	}
 	
 	public void setup() {
 		Board.spawnRings(this.terrain);
-		this.shader.setFogDensity(this.random.nextFloat() * 0.05f + 0.03f);
-		this.shader.setFogGradient(this.random.nextFloat() * 3.0f + 2.0f);
+		this.shader.setFogDensity(this.random.nextFloat() * 0.009f + 0.01f);
+		this.shader.setFogGradient(this.random.nextFloat() * 3.0f + 1.0f);
 		
 		ModelMatrix.main = new ModelMatrix();
 		ModelMatrix.main.loadIdentityMatrix();
@@ -147,12 +160,6 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		this.camera = new Camera(this.player, this.eye);
 		this.camera.look(this.eye, playerPos, this.up);
 		
-		// Set up the light, a single white light as a "sun"
-		this.shader.setLightPosition(210, 215, 210, 1);
-		this.shader.setLightColour(1, 1, 1, 1);
-		// No global ambient lighting. May change.
-		this.shader.setGlobalAmbient(0, 0, 0, 1);
-		
 		this.trees = new ArrayList<MeshModel>();
 		
 		MeshModel tree;
@@ -192,6 +199,39 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 			}
 			this.trees.add(tree);
 		}
+		
+		this.ringLights = new ArrayList<SpotLight>();
+		Point3D pos = Board.getRings().get(0).getPosition();
+		this.ringLights.add(new SpotLight(
+				new Point3D(pos.x, pos.y + 1.5f, pos.z),
+				new Colour(0.906f, 0.761f, 0.318f, 1.0f),
+				new Vector3D(1.0f, 0.01f, 0.002f))
+		);
+		pos = Board.getRings().get(1).getPosition();
+		this.ringLights.add(new SpotLight(
+				new Point3D(pos.x, pos.y + 1.5f, pos.z),
+				new Colour(0.906f, 0.761f, 0.318f, 1.0f),
+				new Vector3D(1.0f, 0.01f, 0.002f))
+		);
+		pos = Board.getRings().get(2).getPosition();
+		this.ringLights.add(new SpotLight(
+				new Point3D(pos.x, pos.y + 1.5f, pos.z),
+				new Colour(0.906f, 0.761f, 0.318f, 1.0f),
+				new Vector3D(1.0f, 0.01f, 0.002f))
+		);
+		pos = Board.getRings().get(3).getPosition();
+		this.ringLights.add(new SpotLight(
+				new Point3D(pos.x, pos.y + 1.5f, pos.z),
+				new Colour(0.906f, 0.761f, 0.318f, 1.0f),
+				new Vector3D(1.0f, 0.01f, 0.002f))
+		);
+		pos = Board.getRings().get(4).getPosition();
+		this.ringLights.add(new SpotLight(
+				new Point3D(pos.x, pos.y + 1.5f, pos.z),
+				new Colour(0.906f, 0.761f, 0.318f, 1.0f),
+				new Vector3D(1.0f, 0.01f, 0.002f))
+		);
+		this.shader.setRingLights(this.ringLights);
 	}
 
 	private void update() {
@@ -231,10 +271,17 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		this.scoredRings.clear();
 		for (Ring ring : Board.getRings()) {
 			if (Utils.isInside(this.player.position, ring.getPosition())) {
-				if (this.player.position.y <= ring.getPosition().y) {
+				if (this.player.position.y >= ring.getPosition().y - 0.2f && this.player.position.y <= ring.getPosition().y + 0.2f) {
 					this.score++;
 					System.out.println("Hey you found a ring! Is this the right game..?");
 					this.scoredRings.add(ring);
+					for (SpotLight l : this.ringLights) {
+						if (Utils.isInside(ring.getPosition(), l.getPosition())) {
+							l.setColour(new Colour(0,0,0,1));
+							this.shader.setRingLights(this.ringLights);
+							break;
+						}
+					}
 					break;
 				}
 			}

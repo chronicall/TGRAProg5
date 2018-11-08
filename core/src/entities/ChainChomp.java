@@ -4,12 +4,11 @@ import java.util.Random;
 
 import com.badlogic.gdx.graphics.Texture;
 
+import environment.terrain.Terrain;
 import graphics.Material;
 import graphics.ModelMatrix;
-import graphics.shapes.SphereGraphic;
+import graphics.Shader;
 import graphics.shapes.g3djmodel.MeshModel;
-import graphics.terrain.Terrain;
-import shaders.Shader;
 import utils.Point3D;
 import utils.Vector3D;
 
@@ -33,11 +32,7 @@ public class ChainChomp extends Character {
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.addTransformation(this.origin.matrix);
 		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		if (this.model == null) {
-			SphereGraphic.drawSolidSphere(this.shader, this.diffuseTexture, this.specularTexture);
-		} else {
-			this.model.draw(this.shader);
-		}
+		this.model.draw(this.shader);
 		ModelMatrix.main.popMatrix();
 	}
 	

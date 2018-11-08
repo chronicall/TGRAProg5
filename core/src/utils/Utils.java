@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
-import textures.TextureData;
+import graphics.TextureData;
 
 public class Utils {
 	public static float baryCentric(Point3D p1, Point3D p2, Point3D p3, Point3D pos) {

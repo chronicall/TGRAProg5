@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 
+import environment.terrain.Terrain;
 import graphics.Colour;
 import graphics.ModelMatrix;
+import graphics.Shader;
 import graphics.shapes.g3djmodel.G3DJModelLoader;
 import graphics.shapes.g3djmodel.MeshMaterial;
 import graphics.shapes.g3djmodel.MeshModel;
-import graphics.terrain.Terrain;
-import shaders.Shader;
 import utils.Point3D;
 import utils.Vector3D;
 
@@ -67,32 +67,39 @@ public class Board {
 		Board.platforms.add(new Platform(position, scale, crate));
 		
 		// Big stack 2
-		position = new Point3D(202.0f, terrain.getTerrainHeight(202, 228) + 1, 228.0f);
+		position = new Point3D(198.0f, terrain.getTerrainHeight(198, 228) + 1, 228.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
-		position = new Point3D(202.0f, terrain.getTerrainHeight(202, 228) + 3, 228.0f);
+		position = new Point3D(198.0f, terrain.getTerrainHeight(198, 228) + 3, 228.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
-		position = new Point3D(202.0f, terrain.getTerrainHeight(202, 228) + 5, 228.0f);
+		position = new Point3D(198.0f, terrain.getTerrainHeight(198, 228) + 5, 228.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
-		position = new Point3D(202.0f, terrain.getTerrainHeight(202, 228) + 7, 228.0f);
+		position = new Point3D(198.0f, terrain.getTerrainHeight(198, 228) + 7, 228.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
 		
-		position = new Point3D(202.0f, terrain.getTerrainHeight(202, 230) + 1, 230.0f);
+		position = new Point3D(198.0f, terrain.getTerrainHeight(198, 230) + 1, 230.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
-		position = new Point3D(202.0f, terrain.getTerrainHeight(202, 230) + 3, 230.0f);
+		position = new Point3D(198.0f, terrain.getTerrainHeight(198, 230) + 3, 230.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
-		position = new Point3D(202.0f, terrain.getTerrainHeight(202, 230) + 5, 230.0f);
+		position = new Point3D(198.0f, terrain.getTerrainHeight(198, 230) + 5, 230.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
-		position = new Point3D(202.0f, terrain.getTerrainHeight(202, 230) + 7, 230.0f);
+		position = new Point3D(198.0f, terrain.getTerrainHeight(198, 230) + 7, 230.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
-		position = new Point3D(202.0f, terrain.getTerrainHeight(202, 230) + 9, 230.0f);
+		position = new Point3D(198.0f, terrain.getTerrainHeight(198, 230) + 9, 230.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
 		
 		// Big stack 3
-		position = new Point3D(208.0f, terrain.getTerrainHeight(208, 234) + 1, 234.0f);
+		position = new Point3D(208.0f, terrain.getTerrainHeight(208, 236) + 1, 236.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
-		position = new Point3D(208.0f, terrain.getTerrainHeight(208, 234) + 3, 234.0f);
+		position = new Point3D(208.0f, terrain.getTerrainHeight(208, 236) + 3, 236.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
-		position = new Point3D(208.0f, terrain.getTerrainHeight(208, 234) + 5, 234.0f);
+		position = new Point3D(208.0f, terrain.getTerrainHeight(208, 236) + 5, 236.0f);
+		Board.platforms.add(new Platform(position, scale, crate));
+		
+		position = new Point3D(210.0f, terrain.getTerrainHeight(210, 236) + 1, 236.0f);
+		Board.platforms.add(new Platform(position, scale, crate));
+		position = new Point3D(210.0f, terrain.getTerrainHeight(210, 236) + 3, 236.0f);
+		Board.platforms.add(new Platform(position, scale, crate));
+		position = new Point3D(210.0f, terrain.getTerrainHeight(210, 236) + 5, 236.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
 		
 		position = new Point3D(210.0f, terrain.getTerrainHeight(210, 234) + 1, 234.0f);
@@ -100,13 +107,6 @@ public class Board {
 		position = new Point3D(210.0f, terrain.getTerrainHeight(210, 234) + 3, 234.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
 		position = new Point3D(210.0f, terrain.getTerrainHeight(210, 234) + 5, 234.0f);
-		Board.platforms.add(new Platform(position, scale, crate));
-		
-		position = new Point3D(210.0f, terrain.getTerrainHeight(210, 232) + 1, 232.0f);
-		Board.platforms.add(new Platform(position, scale, crate));
-		position = new Point3D(210.0f, terrain.getTerrainHeight(210, 232) + 3, 232.0f);
-		Board.platforms.add(new Platform(position, scale, crate));
-		position = new Point3D(210.0f, terrain.getTerrainHeight(210, 232) + 5, 232.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
 		
 		// Big stack 4
@@ -140,9 +140,9 @@ public class Board {
 		Board.rings.add(new Ring(position, rotation, Board.ring));
 		position = new Point3D(210.0f, terrain.getTerrainHeight(210, 234) + 7, 234.0f);
 		Board.rings.add(new Ring(position, rotation, Board.ring));
-		position = new Point3D(202.0f, terrain.getTerrainHeight(202, 230) + 11, 230.0f);
+		position = new Point3D(198.0f, terrain.getTerrainHeight(198, 230) + 11, 230.0f);
 		Board.rings.add(new Ring(position, rotation, Board.ring));
-		position = new Point3D(202.0f, terrain.getTerrainHeight(202, 228) + 9, 228.0f);
+		position = new Point3D(198.0f, terrain.getTerrainHeight(198, 228) + 9, 228.0f);
 		Board.rings.add(new Ring(position, rotation, Board.ring));
 	}
 	

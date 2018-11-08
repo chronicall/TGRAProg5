@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 
 import graphics.ModelMatrix;
-import shaders.Shader;
+import graphics.Shader;
 
 public class MeshModel {
 	public Vector<Mesh> meshes;

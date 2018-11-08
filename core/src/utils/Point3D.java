@@ -17,8 +17,18 @@ public class Point3D {
 		this.z = z;
 	}
 	
+	public Point3D(Point3D p) {
+		this.x = p.x;
+		this.y = p.y;
+		this.z = p.z;
+	}
+	
 	public Point3D add(Vector3D v) {
 		return new Point3D(this.x + v.x, this.y + v.y, this.z + v.z);
+	}
+	
+	public Point3D subtract(Point3D p) {
+		return new Point3D(this.x - p.x, this.y - p.y, this.z - p.z);
 	}
 	
 	public void set(float x, float y, float z) {

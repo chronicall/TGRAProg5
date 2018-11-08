@@ -8,15 +8,13 @@ import com.badlogic.gdx.graphics.Texture;
 
 import environment.Board;
 import environment.Platform;
+import environment.terrain.Terrain;
 import graphics.Colour;
 import graphics.Material;
 import graphics.ModelMatrix;
-import graphics.shapes.BoxGraphic;
-import graphics.shapes.SphereGraphic;
+import graphics.Shader;
 import graphics.shapes.g3djmodel.MeshMaterial;
 import graphics.shapes.g3djmodel.MeshModel;
-import graphics.terrain.Terrain;
-import shaders.Shader;
 import utils.Point3D;
 import utils.Utils;
 import utils.Vector3D;
@@ -24,8 +22,8 @@ import utils.Vector3D;
 public class Player extends Character {
 	private static final float RUN_SPEED = 10;
 	private static final float TURN_SPEED = 120;
-	private static final float JUMP_POWER = 15;
-	private static final float GRAVITY = -30;
+	private static final float JUMP_POWER = 20;
+	private static final float GRAVITY = -45;
 	
 	private float upVelocity;
 	private boolean isJumping;
@@ -47,12 +45,7 @@ public class Player extends Character {
 		ModelMatrix.main.addTransformation(this.origin.matrix);
 		ModelMatrix.main.addScale(5, 5, 5);
 		this.shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		if (this.model == null) {
-			BoxGraphic.drawSolidCube(this.shader, this.diffuseTexture, this.specularTexture);
-			SphereGraphic.drawOutlineSphere(this.shader, this.diffuseTexture, this.specularTexture);
-		} else {
-			this.model.draw(this.shader);
-		}
+		this.model.draw(this.shader);
 		ModelMatrix.main.popMatrix();
 	}
 	
