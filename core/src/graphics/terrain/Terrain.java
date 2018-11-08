@@ -96,7 +96,6 @@ public class Terrain {
 		MeshPart part = new MeshPart();
 		part.type = "TRIANGLES";
 		part.indices = BufferUtils.newShortBuffer(6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1));
-		//part.indices.put(indices);
 		BufferUtils.copy(indices, 0, part.indices, indices.length);
 		part.indices.rewind();
 		

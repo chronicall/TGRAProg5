@@ -253,22 +253,6 @@ public class Shader {
 		Gdx.gl.glUniform1f(this.materialShininessLoc, material.shininess);
 	}
 	
-	public void setMaterialAmbient(float r, float g, float b, float a) {
-		Gdx.gl.glUniform4f(this.materialAmbientLoc, r, g, b, a);
-	}
-	public void setMaterialDiffuse(float r, float g, float b, float a) {
-		Gdx.gl.glUniform4f(this.materialDiffuseLoc, r, g, b, a);
-	}
-	public void setMaterialSpecular(float r, float g, float b, float a) {
-		Gdx.gl.glUniform4f(this.materialSpecularLoc, r, g, b, a);
-	}
-	public void setMaterialEmission(float r, float g, float b, float a) {
-		Gdx.gl.glUniform4f(this.materialEmissionLoc, r, g, b, a);
-	}
-	public void setMaterialShiniess(float shine) {
-		Gdx.gl.glUniform1f(this.materialShininessLoc, shine);
-	}
-	
 	public void setGlobalAmbient(float r, float g, float b, float a) {
 		Gdx.gl.glUniform4f(this.globalAmbientLoc, r, g, b, a);
 	}

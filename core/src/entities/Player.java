@@ -14,12 +14,13 @@ import graphics.shapes.BoxGraphic;
 import graphics.shapes.SphereGraphic;
 import graphics.shapes.g3djmodel.MeshModel;
 import shaders.Shader;
+import utils.Maths;
 
 public class Player extends Character {
 	private static final float RUN_SPEED = 10;
 	private static final float TURN_SPEED = 120;
 	private static final float JUMP_POWER = 15;
-	private static final float GRAVITY = -25;
+	private static final float GRAVITY = -30;
 	
 	private static final float BASE_TERRAIN_HEIGHT = 1;
 	
@@ -74,27 +75,27 @@ public class Player extends Character {
 		Vector3D vecX = new Vector3D(RUN_SPEED * deltaTime, 0.0f, 0.0f);
 		Point3D displacementHorizontal;
 		if (Gdx.input.isKeyPressed(Keys.W)) {
-			displacementHorizontal = this.detectCollissionHorizontal(this.position.add(vecZ)); 
+			displacementHorizontal = this.detectCollissionHorizontal(this.position.add(vecZ), new Vector3D(0.4f, 0, 0.4f)); 
 			if (displacementHorizontal.equals(new Point3D())) {
 				this.origin.addTranslation(vecZ.x, vecZ.y, vecZ.z);
 			}
 		}
 		if (Gdx.input.isKeyPressed(Keys.S)) {
 			Vector3D down = vecZ.scale(-1);
-			displacementHorizontal = this.detectCollissionHorizontal(this.position.add(down));
+			displacementHorizontal = this.detectCollissionHorizontal(this.position.add(down), new Vector3D(-0.4f, 0, -0.4f));
 			if (displacementHorizontal.equals(new Point3D())) {
 				this.origin.addTranslation(vecZ.x, vecZ.y, -vecZ.z);
 			}
 		}
 		if (Gdx.input.isKeyPressed(Keys.A)) {
-			displacementHorizontal = this.detectCollissionHorizontal(this.position.add(vecX));
+			displacementHorizontal = this.detectCollissionHorizontal(this.position.add(vecX), new Vector3D(0.4f, 0, 0.4f));
 			if (displacementHorizontal.equals(new Point3D())) {
 				this.origin.addTranslation(vecX.x, vecX.y, vecX.z);
 			}
 		}
 		if (Gdx.input.isKeyPressed(Keys.D)) {
 			Vector3D right = vecX.scale(-1);
-			displacementHorizontal = this.detectCollissionHorizontal(this.position.add(right)); 
+			displacementHorizontal = this.detectCollissionHorizontal(this.position.add(right), new Vector3D(-0.4f, 0, -0.4f)); 
 			if (displacementHorizontal.equals(new Point3D())) {
 				this.origin.addTranslation(-vecX.x, vecX.y, vecX.z);
 			}
@@ -105,8 +106,8 @@ public class Player extends Character {
 		this.origin.addTranslation(0, this.upVelocity * deltaTime, 0);
 		// Check if falling through the terrain.
 		// If so, reset upward velocity and allow jumping again.
-		Point3D movingTo = new Point3D(0, this.position.y + this.upVelocity * deltaTime, 0);
-		float displacementVertical = this.detectCollisionVertical(movingTo);
+		//Point3D movingTo = new Point3D(0, this.position.y + this.upVelocity * deltaTime, 0);
+		float displacementVertical = this.detectCollisionVertical(this.position);
 		if (displacementVertical != 0.0f) {
 			this.upVelocity = 0.0f;
 			this.isJumping = false;
@@ -125,13 +126,13 @@ public class Player extends Character {
 		}
 	}
 	
-	private Point3D detectCollissionHorizontal(Point3D movingTo) {
+	private Point3D detectCollissionHorizontal(Point3D movingTo, Vector3D offset) {
 		Point3D pos;
 		Point3D displacement = new Point3D();
 		for (Platform platform : Board.getPlatforms()) {
 			pos = platform.getPosition();
-			if (this.withinPlatform(movingTo, pos)) {
-				if (this.position.y < pos.y + 2.1f) {
+			if (Maths.isInside(movingTo.add(offset), pos)) {
+				if (movingTo.y < pos.y + 2f) {
 					displacement.set(pos.x - movingTo.x, 0, pos.z - movingTo.z);
 					return displacement;
 				}
@@ -144,7 +145,7 @@ public class Player extends Character {
 		Point3D pos;
 		for (Platform platform : Board.getPlatforms()) {
 			pos = platform.getPosition();
-			if (this.withinPlatform(this.position, pos)) {
+			if (Maths.isInside(this.position, pos)) {
 				if (movingTo.y < pos.y + 2.1f) {
 					return (pos.y + 2.1f) - movingTo.y;
 				}
@@ -154,10 +155,5 @@ public class Player extends Character {
 			return BASE_TERRAIN_HEIGHT - movingTo.y;
 		}
 		return 0.0f;
-	}
-	
-	private boolean withinPlatform(Point3D p, Point3D platformPos) {
-		return ((p.x < platformPos.x + 1 && p.x > platformPos.x - 1) &&
-				(p.z < platformPos.z + 1 && p.z > platformPos.z - 1));
 	}
 }

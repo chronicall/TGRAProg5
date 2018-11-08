@@ -15,15 +15,19 @@ Controls go here.
   - [ ] Parallax scrolling (Optional)
 - [ ] Board objects
   - [ ] Obstacles
-  - [ ] Platforms
+  - [x] Platforms
 - [ ] Floor
-  - [ ] Some random shape/s
+  - [ ] ~Some random shape/s~
   - [x] Static board
-  - [ ] Randomly generated board
-  - [ ] Board generator/collector (Optional)
-    - [ ] Store a few pre-generated boards
-    - [ ] Keep track of what boards have been used
-    - [ ] Use some board that has not been used before
+    - [x] Texture terrain
+    - [x] Trees at random
+    - [x] Blend map and a few textures for less static look
+    - [ ] Height map for varied height
+  - [ ] ~Randomly generated board~
+  - [ ] ~Board generator/collector (Optional)~
+    - [ ] ~Store a few pre-generated boards~
+    - [ ] ~Keep track of what boards have been used~
+    - [ ] ~Use some board that has not been used before~
 - [ ] Enemies
   - [ ] Something to avoid (moving obstacles)
   - [ ] Can use Bezier motion here
@@ -38,10 +42,11 @@ Controls go here.
   - [ ] Player collission with world/objects
     - [x] Floor
     - [ ] Objects/obstacles
+      - [ ] Make it actually work..
 - [ ] Textures
   - [x] Player
   - [x] Enemies
-  - [ ] Objects/world
+  - [x] Objects/world
 - [ ] Extra stuff
   - [ ] Stars to collect
   - [ ] Level finish/finish condition
