@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.Texture;
 
 import graphics.Material;
 import graphics.terrain.TerrainTexturePack;
+import textures.TextureData;
+import utils.Utils;
 
 public class Shader {
 	private int renderingProgramID;
@@ -60,12 +62,12 @@ public class Shader {
 	private int sun1DiffuseLoc;
 	private int sun1SpecularLoc;
 	
-	public Shader() {
+	public Shader(String vertexShader, String fragmentShader) {
 		String vertexShaderString;
 		String fragmentShaderString;
 
-		vertexShaderString = Gdx.files.internal("shaders/vertexShader.vert").readString();
-		fragmentShaderString =  Gdx.files.internal("shaders/fragmentShader.frag").readString();
+		vertexShaderString = Gdx.files.internal(vertexShader).readString();
+		fragmentShaderString =  Gdx.files.internal(fragmentShader).readString();
 		
 		this.vertexShaderID = Gdx.gl.glCreateShader(GL20.GL_VERTEX_SHADER);
 		this.fragmentShaderID = Gdx.gl.glCreateShader(GL20.GL_FRAGMENT_SHADER);
@@ -167,6 +169,9 @@ public class Shader {
 			Gdx.gl.glUniform1f(this.usesDiffuseTextureLoc, 2.0f);
 			this.usesDiffuseTexture = true;
 
+			// Attempt at Mipmapping.. If I enable this it becomes incredibly laggy. :I
+//			Gdx.gl.glGenerateMipmap(GL20.GL_TEXTURE_2D);
+//			Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MIN_FILTER, GL20.GL_LINEAR_MIPMAP_LINEAR);
 			Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_REPEAT);
 			Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
 		}
@@ -185,6 +190,21 @@ public class Shader {
 			Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_REPEAT);
 			Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
 		}
+	}
+	
+	public void setSkyBoxTexture(String[] textureFiles) {
+		int texID = Gdx.gl.glGenTexture();
+		Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+		Gdx.gl.glBindTexture(GL20.GL_TEXTURE_CUBE_MAP, texID);
+		for (int i = 0; i < textureFiles.length; i++) {
+			TextureData data = Utils.decodeTextureFile(textureFiles[i]);
+			Gdx.gl.glTexImage2D(
+					GL20.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL20.GL_RGBA, data.getWidth(),
+					data.getHeight(), 0, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, data.getBuffer()
+			);
+		}
+		Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_CUBE_MAP, GL20.GL_TEXTURE_MAG_FILTER, GL20.GL_LINEAR);
+		Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_CUBE_MAP, GL20.GL_TEXTURE_MIN_FILTER, GL20.GL_LINEAR);
 	}
 	
 	public boolean usesTextures() {

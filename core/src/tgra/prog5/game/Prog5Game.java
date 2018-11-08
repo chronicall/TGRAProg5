@@ -26,7 +26,8 @@ import graphics.shapes.g3djmodel.MeshModelNode;
 import graphics.terrain.Terrain;
 import graphics.terrain.TerrainTexturePack;
 import shaders.Shader;
-import utils.Maths;
+import skybox.Skybox;
+import utils.Utils;
 
 public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 	private Shader shader;
@@ -52,6 +53,8 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 	
 	private List<MeshModel> trees;
 
+	private Skybox skybox;
+	
 	@Override
 	public void create () {
 		Gdx.gl.glClearColor(0.3f, 0.7f, 1.0f, 1.0f);
@@ -61,7 +64,7 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		Gdx.gl.glCullFace(GL20.GL_BACK);
 		Gdx.input.setInputProcessor(this);
 		
-		this.shader = new Shader();
+		this.shader = new Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag");
 		this.shader.setTextureTilingValue(1.0f);
 		this.shader.setFogDensity(0.005f);
 		this.shader.setFogGradient(1.0f);
@@ -134,16 +137,16 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 			while (true) {
 				x = this.random.nextFloat() * (-400 - 800) + 800;
 				z = this.random.nextFloat() * (-600 - 600) + 600;
-				if (Maths.isInside(this.player.position, new Point3D(x, 0, z)) ||
-					Maths.isInside(this.goomba1.position, new Point3D(x, 0, z)) ||
-					Maths.isInside(this.goomba2.position, new Point3D(x, 0, z)) ||
-					Maths.isInside(this.chainChomp.position, new Point3D(x, 0, z))
+				if (Utils.isInside(this.player.position, new Point3D(x, 0, z)) ||
+					Utils.isInside(this.goomba1.position, new Point3D(x, 0, z)) ||
+					Utils.isInside(this.goomba2.position, new Point3D(x, 0, z)) ||
+					Utils.isInside(this.chainChomp.position, new Point3D(x, 0, z))
 				) {
 					continue;
 				}
 				boolean inPlatform = false;
 				for (Platform platform : Board.getPlatforms()) {
-					if (Maths.isInside(new Point3D(x, 0, z), platform.getPosition())) {
+					if (Utils.isInside(new Point3D(x, 0, z), platform.getPosition())) {
 						inPlatform = true;
 						break;
 					}
@@ -158,6 +161,8 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 			}
 			this.trees.add(tree);
 		}
+		
+		//this.skybox = new Skybox(this.camera);
 	}
 
 	private void update() {
@@ -205,6 +210,7 @@ public class Prog5Game extends ApplicationAdapter implements InputProcessor {
 		this.goomba1.display();
 		this.goomba2.display();
 		this.chainChomp.display();
+		//this.skybox.display();
 	}
 
 	@Override

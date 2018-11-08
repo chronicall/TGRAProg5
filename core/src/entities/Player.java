@@ -15,7 +15,7 @@ import graphics.shapes.SphereGraphic;
 import graphics.shapes.g3djmodel.MeshModel;
 import graphics.terrain.Terrain;
 import shaders.Shader;
-import utils.Maths;
+import utils.Utils;
 
 public class Player extends Character {
 	private static final float RUN_SPEED = 10;
@@ -129,7 +129,7 @@ public class Player extends Character {
 		Point3D displacement = new Point3D();
 		for (Platform platform : Board.getPlatforms()) {
 			pos = platform.getPosition();
-			if (Maths.isInside(movingTo.add(offset), pos)) {
+			if (Utils.isInside(movingTo.add(offset), pos)) {
 				if (movingTo.y < pos.y + 2f) {
 					displacement.set(pos.x - movingTo.x, 0, pos.z - movingTo.z);
 					return displacement;
@@ -144,7 +144,7 @@ public class Player extends Character {
 		Point3D pos;
 		for (Platform platform : Board.getPlatforms()) {
 			pos = platform.getPosition();
-			if (Maths.isInside(this.position, pos)) {
+			if (Utils.isInside(this.position, pos)) {
 				if (movingTo.y < pos.y + 2.1f) {
 					return (pos.y + 2.1f) - movingTo.y;
 				}

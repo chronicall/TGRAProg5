@@ -5,7 +5,6 @@ import graphics.Vector3D;
 public class TreeTranslations {
 	public Vector3D position;
 	public Vector3D scale;
-	//public Vector3D
 	
 	public TreeTranslations(Vector3D position, Vector3D scale) {
 		this.position = position;

@@ -22,7 +22,7 @@ import graphics.shapes.g3djmodel.MeshModelNodePart;
 import graphics.shapes.g3djmodel.MeshPart;
 import graphics.shapes.g3djmodel.MeshTexture;
 import shaders.Shader;
-import utils.Maths;
+import utils.Utils;
 
 public class Terrain {
 	private static final float SIZE = 800;
@@ -186,12 +186,12 @@ public class Terrain {
 		
 		float quadTriangleHeight;
 		if (xCoord <= 1 - zCoord) {
-			quadTriangleHeight = Maths.baryCentric(new Point3D(0, this.heightMap[gridX][gridZ], 0),
+			quadTriangleHeight = Utils.baryCentric(new Point3D(0, this.heightMap[gridX][gridZ], 0),
 												   new Point3D(1, this.heightMap[gridX + 1][gridZ], 0),
 												   new Point3D(0, this.heightMap[gridX][gridZ + 1], 1),
 												   new Point3D(xCoord, 0, zCoord));
 		} else {
-			quadTriangleHeight = Maths.baryCentric(new Point3D(1, this.heightMap[gridX + 1][gridZ], 0),
+			quadTriangleHeight = Utils.baryCentric(new Point3D(1, this.heightMap[gridX + 1][gridZ], 0),
 											       new Point3D(1, this.heightMap[gridX + 1][gridZ + 1], 1),
 											       new Point3D(0, this.heightMap[gridX][gridZ + 1], 1),
 											       new Point3D(xCoord, 0, zCoord));

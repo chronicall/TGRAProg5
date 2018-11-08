@@ -26,8 +26,8 @@ varying float v_visibility;
 void main()
 {
 	// Global coordinate.
-	vec4 position = u_modelMatrix * vec4(a_position.x, a_position.y, a_position.z, 1.0);
-	vec4 normal = u_modelMatrix * vec4(a_normal.x, a_normal.y, a_normal.z, 0.0);
+	vec4 position = u_modelMatrix * vec4(a_position, 1.0);
+	vec4 normal = u_modelMatrix * vec4(a_normal, 0.0);
 	
 	vec4 positionRelativeToCamera = u_viewMatrix * position;
 	float distance = length(positionRelativeToCamera);

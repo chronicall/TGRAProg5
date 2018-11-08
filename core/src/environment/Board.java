@@ -105,6 +105,8 @@ public class Board {
 		Board.platforms.add(new Platform(position, scale, crate));
 		position = new Point3D(218.0f, terrain.getTerrainHeight(218, 230) + 5, 230.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
+		position = new Point3D(218.0f, terrain.getTerrainHeight(218, 230) + 7, 230.0f);
+		Board.platforms.add(new Platform(position, scale, crate));
 		
 		position = new Point3D(222.0f, terrain.getTerrainHeight(222, 230) + 1, 230.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
@@ -113,6 +115,8 @@ public class Board {
 		position = new Point3D(222.0f, terrain.getTerrainHeight(222, 230) + 5, 230.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
 		position = new Point3D(222.0f, terrain.getTerrainHeight(222, 230) + 7, 230.0f);
+		Board.platforms.add(new Platform(position, scale, crate));
+		position = new Point3D(222.0f, terrain.getTerrainHeight(222, 230) + 9, 230.0f);
 		Board.platforms.add(new Platform(position, scale, crate));
 		
 		// TODO: Add something to "collect" on top of some of the boxes

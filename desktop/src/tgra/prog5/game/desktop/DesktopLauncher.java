@@ -8,8 +8,8 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "Programming Assignment 5 - This Is Not Mario 64";
-		config.height = 800;
-		config.width = 1280;
+		config.height = 1200;
+		config.width = 1680;
 		config.x = 150;
 		config.y = 50;
 		new LwjglApplication(new Prog5Game(), config);
