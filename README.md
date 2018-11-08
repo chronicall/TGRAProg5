@@ -40,8 +40,8 @@ There is a lot that can still be done. But we managed to get a whole heck of a l
     - [ ] Big cube/sphere that the "board" is inside
     - [ ] Texture on the inside of the shape
   - [ ] Parallax scrolling (Optional)
-- [ ] Board objects
-  - [ ] Obstacles
+- [x] Board objects
+  - [ ] ~Obstacles~
   - [x] Platforms
 - [x] Floor
   - [ ] ~Some random shape/s~
@@ -55,11 +55,11 @@ There is a lot that can still be done. But we managed to get a whole heck of a l
     - [ ] ~Store a few pre-generated boards~
     - [ ] ~Keep track of what boards have been used~
     - [ ] ~Use some board that has not been used before~
-- [ ] Enemies
-  - [ ] Something to avoid (moving obstacles)
-  - [ ] Can use Bezier motion here
-  - [ ] Enemy that is tied to one spot (chain chomps)
-  - [ ] Moving enemies (goombas)
+- [x] Enemies
+  - [x] Something to avoid (moving obstacles)
+  - [x] Can use Bezier motion here
+  - [ ] ~Enemy that is tied to one spot (chain chomps)~
+  - [x] Moving enemies (goombas)
 - [x] Super Sario (character)
   - [x] Movement
   - [x] Jumping
